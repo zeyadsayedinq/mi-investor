@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi-Assignment — 360° Brand</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#08090D;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;color:#fff}
+:root{--c:#22D3EE;--p:#A855F7;--w:960px}
+#app{width:100%;height:100vh;position:relative;overflow:hidden}
+.sl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:56px 88px;opacity:0;pointer-events:none;transition:opacity .55s cubic-bezier(.22,1,.36,1),transform .55s cubic-bezier(.22,1,.36,1);transform:translateY(24px)}
+.sl.in{opacity:1;pointer-events:all;transform:none}
+.sl.out{opacity:0;transform:translateY(-24px)}
+.bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.bgl{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.035)}
+.bgv{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.035)}
+.orb{position:absolute;border-radius:50%;pointer-events:none}
+.nav{position:absolute;bottom:28px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;z-index:99}
+.nb{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.025);color:rgba(255,255,255,.45);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .2s;user-select:none}
+.nb:hover{border-color:rgba(34,211,238,.35);color:#22D3EE;background:rgba(34,211,238,.05)}
+.nb:disabled{opacity:.18;cursor:default}
+.pip{display:flex;gap:4px;align-items:center}
+.p{width:4px;height:4px;border-radius:99px;background:rgba(255,255,255,.18);cursor:pointer;transition:all .3s}
+.p.a{background:#22D3EE;width:18px}
+.tag{position:absolute;top:26px;left:38px;font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(34,211,238,.45)}
+.pg{position:absolute;top:26px;right:38px;font-size:9px;color:rgba(255,255,255,.15);letter-spacing:.08em}
+.ew{font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#22D3EE;margin-bottom:12px}
+.h1{font-size:clamp(32px,4.5vw,64px);font-weight:700;line-height:1.04;letter-spacing:-.04em}
+.h2{font-size:clamp(20px,3vw,40px);font-weight:700;line-height:1.08;letter-spacing:-.03em}
+.h3{font-size:15px;font-weight:600;color:#fff;margin-bottom:5px}
+.body{font-size:13px;color:#64748B;line-height:1.7}
+.cyan{color:#22D3EE}.purple{color:#A855F7}.green{color:#10B981}
+.grad{background:linear-gradient(135deg,#22D3EE,#A855F7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.accent{width:28px;height:2px;background:#22D3EE;border-radius:1px;margin:12px 0}
+.card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:20px;transition:all .22s}
+.card:hover{background:rgba(34,211,238,.04);border-color:rgba(34,211,238,.15)}
+.cc{border-color:rgba(34,211,238,.16);background:rgba(34,211,238,.035)}
+.cp{border-color:rgba(168,85,247,.16);background:rgba(168,85,247,.035)}
+.stat{font-size:clamp(28px,3.5vw,48px);font-weight:700;color:#22D3EE;letter-spacing:-.04em;line-height:1}
+.slabel{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#1E293B;margin-top:4px}
+.btrack{background:rgba(255,255,255,.05);border-radius:2px;height:4px;overflow:hidden;margin:5px 0}
+.bfill{height:100%;border-radius:2px;background:linear-gradient(90deg,#22D3EE,#A855F7);transition:width 1.4s ease}
+.row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.row:last-child{border:none}
+.dot{width:5px;height:5px;border-radius:50%;background:#22D3EE;margin-top:5px;flex-shrink:0}
+.dp{background:#A855F7}.dg{background:#10B981}.dy{background:#FBBF24}.dr{background:#EF4444}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;width:100%;max-width:var(--w)}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;width:100%;max-width:var(--w)}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:11px;width:100%;max-width:var(--w)}
+.w{width:100%;max-width:var(--w);position:relative;z-index:1}
+@keyframes fi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes rk{to{transform:rotateX(360deg) rotateY(540deg)}}
+.stg>*{opacity:0;animation:fi .45s ease forwards}
+.stg>:nth-child(1){animation-delay:.06s}.stg>:nth-child(2){animation-delay:.13s}
+.stg>:nth-child(3){animation-delay:.20s}.stg>:nth-child(4){animation-delay:.27s}
+.stg>:nth-child(5){animation-delay:.34s}.stg>:nth-child(6){animation-delay:.41s}
+.fl{animation:fl 5s ease-in-out infinite}
+.cs{perspective:280px;width:72px;height:72px;margin:0 auto 24px}
+.c3{width:100%;height:100%;transform-style:preserve-3d;animation:rk 9s linear infinite}
+.cf{position:absolute;width:40px;height:40px;top:16px;left:16px;border:1px solid rgba(34,211,238,.28);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#22D3EE;backface-visibility:hidden}
+.cf.a{transform:translateZ(20px);background:rgba(34,211,238,.08)}
+.cf.b{transform:rotateY(180deg) translateZ(20px);background:rgba(168,85,247,.08);color:#A855F7}
+.cf.c{transform:rotateY(90deg) translateZ(20px);background:rgba(34,211,238,.04)}
+.cf.d{transform:rotateY(-90deg) translateZ(20px);background:rgba(168,85,247,.04)}
+.cf.e{transform:rotateX(90deg) translateZ(20px);background:rgba(255,255,255,.02)}
+.cf.f{transform:rotateX(-90deg) translateZ(20px)}
+.pill{display:inline-flex;align-items:center;padding:4px 10px;border-radius:99px;font-size:9px;font-weight:700;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.03);color:#94A3B8;letter-spacing:.05em;text-transform:uppercase}
+.term{background:#050A14;border:1px solid rgba(34,211,238,.15);border-radius:10px;overflow:hidden;font-family:'SF Mono','Fira Code','Courier New',monospace;font-size:11px}
+.term-bar{background:rgba(255,255,255,.035);padding:7px 12px;display:flex;gap:5px;align-items:center}
+.term-dot{width:7px;height:7px;border-radius:50%}
+.term-body{padding:14px;line-height:1.85}
+.tc{color:#22D3EE}.tg{color:#10B981}.tp{color:#A855F7}.tw{color:#64748B}.ty{color:#FBBF24}
+@keyframes pu{0%,100%{opacity:.4}50%{opacity:1}}
+.pulse{animation:pu 1.5s ease-in-out infinite}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="bg">
+  <div class="bgl" style="top:25%"></div><div class="bgl" style="top:50%"></div><div class="bgl" style="top:75%"></div>
+  <div class="bgv" style="left:33%"></div><div class="bgv" style="left:66%"></div>
+</div>
+
+<!-- S1: COVER -->
+<div class="sl in" data-n="0">
+  <div class="orb" style="width:700px;height:700px;background:radial-gradient(circle,rgba(34,211,238,.055),transparent 65%);top:-300px;left:-200px"></div>
+  <div class="orb" style="width:500px;height:500px;background:radial-gradient(circle,rgba(168,85,247,.055),transparent 65%);bottom:-200px;right:-150px"></div>
+  <div class="w" style="display:grid;grid-template-columns:1.1fr 1fr;gap:80px;align-items:center">
+    <div class="stg">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px">
+        <div style="width:30px;height:30px;background:linear-gradient(135deg,rgba(34,211,238,.2),rgba(168,85,247,.2));border:1px solid rgba(34,211,238,.25);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#22D3EE">Mi</div>
+        <div style="font-size:14px;font-weight:700;letter-spacing:-.02em">Mi-Assignment</div>
+        <div style="font-size:9px;background:rgba(34,211,238,.1);color:#22D3EE;border:1px solid rgba(34,211,238,.2);padding:2px 8px;border-radius:99px;font-weight:700;letter-spacing:.08em">BETA</div>
+      </div>
+      <div class="ew">360° Brand Overview</div>
+      <div class="h1" style="margin-bottom:18px">Academic Intelligence.<br><span class="grad">Built for MENA.</span></div>
+      <div class="body" style="max-width:420px;font-size:14px;line-height:1.75;margin-bottom:28px">The AI engine that turns any assignment brief into a submission-ready package — built exclusively for students across Egypt, Saudi Arabia, UAE, and Lebanon.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="pill">🇪🇬 Egypt</span>
+        <span class="pill">🇸🇦 Saudi Arabia</span>
+        <span class="pill">🇦🇪 UAE</span>
+        <span class="pill">🇱🇧 Lebanon</span>
+        <span class="pill">+ MENA</span>
+      </div>
+    </div>
+    <div>
+      <div class="cs fl">
+        <div class="c3">
+          <div class="cf a">Mi</div><div class="cf b">Mi</div>
+          <div class="cf c">Mi</div><div class="cf d">Mi</div>
+          <div class="cf e"></div><div class="cf f"></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,.05);border-radius:12px;overflow:hidden">
+        <div style="background:#08090D;padding:18px;text-align:center"><div class="stat" style="font-size:28px">94</div><div class="slabel">Universities</div></div>
+        <div style="background:#08090D;padding:18px;text-align:center"><div class="stat" style="font-size:28px">7</div><div class="slabel">AI Domains</div></div>
+        <div style="background:#08090D;padding:18px;text-align:center"><div class="stat" style="font-size:28px">20+</div><div class="slabel">Assignment types</div></div>
+        <div style="background:#08090D;padding:18px;text-align:center"><div class="stat" style="font-size:28px">99%</div><div class="slabel">Gross margin</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2: THE PRODUCT -->
+<div class="sl" data-n="1">
+  <div class="tag">Product</div><div class="pg">02 / 10</div>
+  <div class="orb" style="width:400px;height:400px;background:radial-gradient(circle,rgba(34,211,238,.05),transparent 70%);top:-100px;right:0"></div>
+  <div class="w">
+    <div class="ew">What Mi does</div>
+    <div class="h2" style="margin-bottom:8px">One prompt.<br><span class="cyan">Submission-ready in minutes.</span></div>
+    <div class="accent"></div>
+    <div style="display:flex;gap:0;align-items:stretch;margin:22px 0 18px">
+      <div class="card" style="flex:1;padding:18px 14px;text-align:center;border-radius:12px 0 0 12px">
+        <div style="font-size:22px;margin-bottom:8px">📝</div>
+        <div style="font-size:10px;font-weight:700;color:#22D3EE;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px">You submit</div>
+        <div style="font-size:11px;color:#64748B">Assignment brief + select your university and major</div>
+      </div>
+      <div style="display:flex;align-items:center;padding:0 10px;color:rgba(34,211,238,.35);font-size:20px">→</div>
+      <div class="card cc" style="flex:1;padding:18px 14px;text-align:center;border-radius:0">
+        <div style="font-size:22px;margin-bottom:8px">🧠</div>
+        <div style="font-size:10px;font-weight:700;color:#A855F7;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px">Mi-CORE thinks</div>
+        <div style="font-size:11px;color:#64748B">Detects domain · applies regional standards · generates with 8K thinking tokens</div>
+      </div>
+      <div style="display:flex;align-items:center;padding:0 10px;color:rgba(34,211,238,.35);font-size:20px">→</div>
+      <div class="card" style="flex:1;padding:18px 14px;text-align:center;border-radius:0 12px 12px 0">
+        <div style="font-size:22px;margin-bottom:8px">📦</div>
+        <div style="font-size:10px;font-weight:700;color:#22D3EE;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px">You download</div>
+        <div style="font-size:11px;color:#64748B">Complete package — PDF, Word, PowerPoint, Excel, SVG, ZIP</div>
+      </div>
+    </div>
+    <div class="g3">
+      <div class="card cc" style="padding:18px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#22D3EE;margin-bottom:12px">The output package</div>
+        <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">Submission_Clean.pdf</span> — print-ready, no watermarks</div></div>
+        <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">Submission_Clean.docx</span> — editable Word</div></div>
+        <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">Briefing_Deck.pptx</span> — 10 slides + real Pexels images</div></div>
+        <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">Domain extras</span> — SVG, XLSX, SQL, code files</div></div>
+      </div>
+      <div class="card" style="padding:18px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155;margin-bottom:12px">Mi-Academy (unique)</div>
+        <div class="row"><div class="dot dp"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">Step-by-step breakdown</span> — understand the solution</div></div>
+        <div class="row"><div class="dot dp"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">Defense Q&A</span> — 4 professor-style questions</div></div>
+        <div class="row"><div class="dot dp"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">Slide script</span> — 60-90s speaker notes per slide</div></div>
+        <div class="row"><div class="dot dp"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">Mi-Vault</span> — all missions saved and searchable</div></div>
+      </div>
+      <div class="card" style="padding:18px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155;margin-bottom:12px">Why it works</div>
+        <div class="row"><div class="dot dg"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">Regional standards</span> — ECP 203, Civil Code, MOHAP built-in</div></div>
+        <div class="row"><div class="dot dg"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">Arabic RTL</span> — full bilingual interface</div></div>
+        <div class="row"><div class="dot dg"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">Zero setup</span> — browser, no app, instant</div></div>
+        <div class="row"><div class="dot dg"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">3 minutes</span> — average mission completion time</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3: DOMAINS EXPLORER -->
+<div class="sl" data-n="2">
+  <div class="tag">Domains</div><div class="pg">03 / 10</div>
+  <div class="w">
+    <div class="ew">Specialist coverage</div>
+    <div class="h2" style="margin-bottom:8px">7 domains.<br><span class="cyan">Each with its own AI engine.</span></div>
+    <div class="accent"></div>
+    <div style="display:flex;gap:14px;margin-top:22px">
+      <div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0;width:152px">
+        <button onclick="showD(0)" id="db0" class="card cc" style="padding:11px 14px;text-align:left;cursor:pointer;border:none;width:100%"><span style="font-size:16px;margin-right:8px">⚙️</span><span style="font-size:12px;font-weight:600">Engineering</span></button>
+        <button onclick="showD(1)" id="db1" class="card" style="padding:11px 14px;text-align:left;cursor:pointer;border:none;width:100%"><span style="font-size:16px;margin-right:8px">🏥</span><span style="font-size:12px;font-weight:600">Medical</span></button>
+        <button onclick="showD(2)" id="db2" class="card" style="padding:11px 14px;text-align:left;cursor:pointer;border:none;width:100%"><span style="font-size:16px;margin-right:8px">⚖️</span><span style="font-size:12px;font-weight:600">Law</span></button>
+        <button onclick="showD(3)" id="db3" class="card" style="padding:11px 14px;text-align:left;cursor:pointer;border:none;width:100%"><span style="font-size:16px;margin-right:8px">💻</span><span style="font-size:12px;font-weight:600">CS</span></button>
+        <button onclick="showD(4)" id="db4" class="card" style="padding:11px 14px;text-align:left;cursor:pointer;border:none;width:100%"><span style="font-size:16px;margin-right:8px">📊</span><span style="font-size:12px;font-weight:600">Business</span></button>
+        <button onclick="showD(5)" id="db5" class="card" style="padding:11px 14px;text-align:left;cursor:pointer;border:none;width:100%"><span style="font-size:16px;margin-right:8px">🔢</span><span style="font-size:12px;font-weight:600">Math</span></button>
+        <button onclick="showD(6)" id="db6" class="card" style="padding:11px 14px;text-align:left;cursor:pointer;border:none;width:100%"><span style="font-size:16px;margin-right:8px">📚</span><span style="font-size:12px;font-weight:600">Humanities</span></button>
+      </div>
+      <div class="card cc" id="dd" style="flex:1;padding:24px;min-height:340px;transition:all .25s">
+        <div id="dc">
+          <div style="font-size:30px;margin-bottom:10px">⚙️</div>
+          <div style="font-size:18px;font-weight:700;margin-bottom:8px">Engineering</div>
+          <div style="font-size:12px;color:#94A3B8;line-height:1.7;margin-bottom:16px">Full structural and process engineering with regional standards. Given/Find/Solution/Check format with mandatory self-verification and SVG diagrams.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <div class="row"><div class="dot"></div><div style="font-size:11px;color:#94A3B8">ECP 203-2018 (Egypt) by section</div></div>
+            <div class="row"><div class="dot"></div><div style="font-size:11px;color:#94A3B8">SBC 304 (Saudi) · UAE Building Code</div></div>
+            <div class="row"><div class="dot"></div><div style="font-size:11px;color:#94A3B8">SVG cross-section + dimension lines</div></div>
+            <div class="row"><div class="dot"></div><div style="font-size:11px;color:#94A3B8">BBS table with BS 8666 compliance</div></div>
+            <div class="row"><div class="dot"></div><div style="font-size:11px;color:#94A3B8">Sizing_Calculator.xlsx included</div></div>
+            <div class="row"><div class="dot"></div><div style="font-size:11px;color:#94A3B8">Safety factors + self-check mandatory</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S4: TERMINAL -->
+<div class="sl" data-n="3">
+  <div class="tag">Experience</div><div class="pg">04 / 10</div>
+  <div class="w">
+    <div class="ew">The interface</div>
+    <div class="h2" style="margin-bottom:8px">Dark. Focused.<br><span class="cyan">Built for students who ship.</span></div>
+    <div class="accent"></div>
+    <div class="g2" style="margin-top:22px">
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155;margin-bottom:10px">Mi Terminal — live session</div>
+        <div class="term" style="margin-bottom:14px">
+          <div class="term-bar">
+            <div class="term-dot" style="background:#EF4444"></div>
+            <div class="term-dot" style="background:#FBBF24"></div>
+            <div class="term-dot" style="background:#10B981"></div>
+            <span style="font-size:9px;color:#334155;margin-left:8px;letter-spacing:.08em">MI TERMINAL · MISSION ACTIVE</span>
+          </div>
+          <div class="term-body">
+            <div class="tw">// GUC · Civil Engineering · Egypt</div>
+            <div><span class="tc">domain</span><span class="tw"> → </span><span class="tg">ENGINEERING</span></div>
+            <div><span class="tc">standard</span><span class="tw"> → </span><span class="tp">ECP 203-2018</span></div>
+            <div><span class="tc">thinking</span><span class="tw"> → </span><span class="ty">8,000 tokens activated</span></div>
+            <div><span class="tc">generating</span><span class="tw"> → Given/Find/Solution · SVG · BBS</span></div>
+            <div><span class="tc">status</span><span class="tw"> → </span><span class="tg pulse">● MISSION ACCOMPLISHED</span></div>
+          </div>
+        </div>
+        <div class="term">
+          <div class="term-bar">
+            <div class="term-dot" style="background:#EF4444"></div>
+            <div class="term-dot" style="background:#FBBF24"></div>
+            <div class="term-dot" style="background:#10B981"></div>
+            <span style="font-size:9px;color:#334155;margin-left:8px;letter-spacing:.08em">MI ACADEMY · STUDY MODE</span>
+          </div>
+          <div class="term-body">
+            <div class="tw">// RC Beam Design · 6 steps · 4 Q&A pairs</div>
+            <div><span class="tp">step 1</span><span class="tw"> → Loading analysis: wD=15, wL=10 kN/m</span></div>
+            <div><span class="tp">step 2</span><span class="tw"> → Ultimate load: wu = 1.4×15 + 1.6×10</span></div>
+            <div><span class="tc">defend</span><span class="tw"> → Q: Why use 1.4 for dead load factor?</span></div>
+            <div><span class="tg">answer</span><span class="tw"> → [tap to reveal after you try]</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card cc" style="padding:18px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#22D3EE;margin-bottom:12px">Pages + Features</div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:12px;font-weight:600;color:#fff">Mi Terminal</div><div style="font-size:11px;color:#64748B">Submit assignment · select uni + major · upload files</div></div></div>
+          <div class="row"><div class="dot dp"></div><div><div style="font-size:12px;font-weight:600;color:#fff">Results Dashboard</div><div style="font-size:11px;color:#64748B">View solution · Image Lab · download full package</div></div></div>
+          <div class="row"><div class="dot dg"></div><div><div style="font-size:12px;font-weight:600;color:#fff">Mi-Academy</div><div style="font-size:11px;color:#64748B">Steps · Defense Q&A · Slides · Mi-Vault archive</div></div></div>
+          <div class="row"><div class="dot dy"></div><div><div style="font-size:12px;font-weight:600;color:#fff">Image Lab</div><div style="font-size:11px;color:#64748B">AI image generation for presentations</div></div></div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:12px;font-weight:600;color:#fff">Pricing · Checkout</div><div style="font-size:11px;color:#64748B">InstaPay · Vodafone Cash · seamless</div></div></div>
+        </div>
+        <div class="card" style="padding:18px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155;margin-bottom:12px">Interface highlights</div>
+          <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">Full Arabic RTL</span> — real bilingual, not just translated</div></div>
+          <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">Mobile-first</span> — students live on their phones</div></div>
+          <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">Dark mode native</span> — built for night-before-deadline sessions</div></div>
+          <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff">3 min avg</span> — standard assignment to full package</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S5: UNIVERSITIES -->
+<div class="sl" data-n="4">
+  <div class="tag">Coverage</div><div class="pg">05 / 10</div>
+  <div class="w">
+    <div class="ew">Regional depth</div>
+    <div class="h2" style="margin-bottom:8px">94 universities.<br><span class="cyan">Every major. Every country.</span></div>
+    <div class="accent"></div>
+    <div class="g3" style="margin-top:22px;margin-bottom:16px">
+      <div class="card cc" style="padding:20px">
+        <div style="font-size:22px;margin-bottom:10px">🇪🇬</div>
+        <div class="h3" style="font-size:14px">Egypt — 40+ unis</div>
+        <div style="font-size:11px;color:#64748B;margin-bottom:12px">ECP 203 · Egyptian Civil Code · Cairo MOH · CRCICA</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          <span style="font-size:9px;background:rgba(34,211,238,.09);color:#22D3EE;padding:2px 7px;border-radius:4px;font-weight:600">GUC</span>
+          <span style="font-size:9px;background:rgba(34,211,238,.09);color:#22D3EE;padding:2px 7px;border-radius:4px;font-weight:600">AUC</span>
+          <span style="font-size:9px;background:rgba(34,211,238,.09);color:#22D3EE;padding:2px 7px;border-radius:4px;font-weight:600">Cairo</span>
+          <span style="font-size:9px;background:rgba(34,211,238,.09);color:#22D3EE;padding:2px 7px;border-radius:4px;font-weight:600">Alexandria</span>
+          <span style="font-size:9px;background:rgba(34,211,238,.09);color:#22D3EE;padding:2px 7px;border-radius:4px;font-weight:600">Ain Shams</span>
+          <span style="font-size:9px;background:rgba(34,211,238,.09);color:#22D3EE;padding:2px 7px;border-radius:4px;font-weight:600">MSA</span>
+          <span style="font-size:9px;background:rgba(34,211,238,.09);color:#22D3EE;padding:2px 7px;border-radius:4px;font-weight:600">BUE</span>
+          <span style="font-size:9px;background:rgba(34,211,238,.09);color:#22D3EE;padding:2px 7px;border-radius:4px;font-weight:600">Mansoura</span>
+          <span style="font-size:9px;background:rgba(168,85,247,.09);color:#A855F7;padding:2px 7px;border-radius:4px;font-weight:600">+32 more</span>
+        </div>
+      </div>
+      <div class="card" style="padding:20px">
+        <div style="font-size:22px;margin-bottom:10px">🇸🇦</div>
+        <div class="h3" style="font-size:14px">Saudi — 25+ unis</div>
+        <div style="font-size:11px;color:#64748B;margin-bottom:12px">SBC 304 · Saudi MOH · Vision 2030 · SCCA arbitration</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          <span style="font-size:9px;background:rgba(255,255,255,.06);color:#94A3B8;padding:2px 7px;border-radius:4px;font-weight:600">KSU</span>
+          <span style="font-size:9px;background:rgba(255,255,255,.06);color:#94A3B8;padding:2px 7px;border-radius:4px;font-weight:600">KFUPM</span>
+          <span style="font-size:9px;background:rgba(255,255,255,.06);color:#94A3B8;padding:2px 7px;border-radius:4px;font-weight:600">KAUST</span>
+          <span style="font-size:9px;background:rgba(255,255,255,.06);color:#94A3B8;padding:2px 7px;border-radius:4px;font-weight:600">KAU</span>
+          <span style="font-size:9px;background:rgba(168,85,247,.09);color:#A855F7;padding:2px 7px;border-radius:4px;font-weight:600">+21 more</span>
+        </div>
+      </div>
+      <div class="card" style="padding:20px">
+        <div style="font-size:22px;margin-bottom:10px">🇦🇪🇱🇧</div>
+        <div class="h3" style="font-size:14px">UAE + Lebanon — 15+ unis</div>
+        <div style="font-size:11px;color:#64748B;margin-bottom:12px">UAE Building Code · MOHAP · DHA · AUB · LAU</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          <span style="font-size:9px;background:rgba(255,255,255,.06);color:#94A3B8;padding:2px 7px;border-radius:4px;font-weight:600">UAEU</span>
+          <span style="font-size:9px;background:rgba(255,255,255,.06);color:#94A3B8;padding:2px 7px;border-radius:4px;font-weight:600">AUS</span>
+          <span style="font-size:9px;background:rgba(255,255,255,.06);color:#94A3B8;padding:2px 7px;border-radius:4px;font-weight:600">AUB</span>
+          <span style="font-size:9px;background:rgba(255,255,255,.06);color:#94A3B8;padding:2px 7px;border-radius:4px;font-weight:600">LAU</span>
+          <span style="font-size:9px;background:rgba(168,85,247,.09);color:#A855F7;padding:2px 7px;border-radius:4px;font-weight:600">+11 more</span>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="padding:20px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155;margin-bottom:14px">Why regional specificity is our moat</div>
+      <div class="g3">
+        <div class="row"><div class="dot"></div><div><div style="font-size:12px;font-weight:600;color:#fff">Local building codes</div><div style="font-size:11px;color:#64748B">ECP 203 for Egypt, SBC for Saudi, UAE code — each cited by exact section number</div></div></div>
+        <div class="row"><div class="dot dp"></div><div><div style="font-size:12px;font-weight:600;color:#fff">Regional legal frameworks</div><div style="font-size:11px;color:#64748B">Egyptian Civil Code (Law 131/1948), Saudi Civil Transactions, UAE Federal Law 5/1985</div></div></div>
+        <div class="row"><div class="dot dg"></div><div><div style="font-size:12px;font-weight:600;color:#fff">Clinical guidelines</div><div style="font-size:11px;color:#64748B">Egyptian MOH, Saudi MOH, UAE MOHAP/DHA — regionally appropriate protocols</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S6: PRICING -->
+<div class="sl" data-n="5">
+  <div class="tag">Pricing</div><div class="pg">06 / 10</div>
+  <div class="w">
+    <div class="ew">Fair for students</div>
+    <div class="h2" style="margin-bottom:8px">Less than one hour<br><span class="cyan">with a private tutor.</span></div>
+    <div class="accent"></div>
+    <div class="g3" style="margin-top:22px;margin-bottom:16px">
+      <div class="card" style="padding:22px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155;margin-bottom:12px">Free</div>
+        <div style="font-size:30px;font-weight:700;color:#fff;letter-spacing:-.03em;margin-bottom:3px">0 EGP</div>
+        <div style="font-size:11px;color:#64748B;margin-bottom:16px">3 missions · no card · full quality</div>
+        <div class="row"><div class="dot"></div><div style="font-size:11px;color:#94A3B8">All assignment types</div></div>
+        <div class="row"><div class="dot"></div><div style="font-size:11px;color:#94A3B8">Full output quality — no crippling</div></div>
+        <div class="row"><div class="dot"></div><div style="font-size:11px;color:#94A3B8">Experience the product completely</div></div>
+      </div>
+      <div class="card cc" style="padding:22px;position:relative">
+        <div style="position:absolute;top:-10px;right:14px;background:linear-gradient(135deg,#22D3EE,#A855F7);color:#000;font-size:8px;font-weight:800;padding:3px 10px;border-radius:99px;letter-spacing:.08em">POPULAR</div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#22D3EE;margin-bottom:12px">Pro Monthly</div>
+        <div style="font-size:30px;font-weight:700;color:#22D3EE;letter-spacing:-.03em;margin-bottom:3px">350 EGP</div>
+        <div style="font-size:11px;color:#64748B;margin-bottom:16px">≈ $7 USD · 30 days · 25 missions</div>
+        <div class="row"><div class="dot"></div><div style="font-size:11px;color:#94A3B8">All export formats</div></div>
+        <div class="row"><div class="dot"></div><div style="font-size:11px;color:#94A3B8">Mi-Academy + Mi-Vault</div></div>
+        <div class="row"><div class="dot"></div><div style="font-size:11px;color:#94A3B8">Priority AI processing</div></div>
+      </div>
+      <div class="card cp" style="padding:22px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#A855F7;margin-bottom:12px">Pro Quarterly</div>
+        <div style="font-size:30px;font-weight:700;color:#A855F7;letter-spacing:-.03em;margin-bottom:3px">1,000 EGP</div>
+        <div style="font-size:11px;color:#64748B;margin-bottom:16px">≈ $20 USD · 90 days · 60 missions · save 14%</div>
+        <div class="row"><div class="dot dp"></div><div style="font-size:11px;color:#94A3B8">Everything in monthly</div></div>
+        <div class="row"><div class="dot dp"></div><div style="font-size:11px;color:#94A3B8">Full semester coverage</div></div>
+        <div class="row"><div class="dot dp"></div><div style="font-size:11px;color:#94A3B8">WhatsApp direct support</div></div>
+      </div>
+    </div>
+    <div class="card" style="padding:18px;background:rgba(34,211,238,.03);border-color:rgba(34,211,238,.1)">
+      <div style="display:flex;gap:32px;flex-wrap:wrap;justify-content:center">
+        <div style="text-align:center"><div style="font-size:13px;font-weight:700;color:#22D3EE">InstaPay</div><div style="font-size:10px;color:#334155">mi-assignment@instapay</div></div>
+        <div style="text-align:center"><div style="font-size:13px;font-weight:700;color:#22D3EE">Vodafone Cash</div><div style="font-size:10px;color:#334155">01107743984</div></div>
+        <div style="text-align:center"><div style="font-size:13px;font-weight:700;color:#22D3EE">WhatsApp</div><div style="font-size:10px;color:#334155">+20 110 774 3984</div></div>
+        <div style="text-align:center"><div style="font-size:13px;font-weight:700;color:#FBBF24">Card (Q3 2025)</div><div style="font-size:10px;color:#334155">Tap.company · Apple Pay · STC</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S7: MI-ACADEMY -->
+<div class="sl" data-n="6">
+  <div class="tag">Mi-Academy</div><div class="pg">07 / 10</div>
+  <div class="orb" style="width:400px;height:400px;background:radial-gradient(circle,rgba(168,85,247,.05),transparent 70%);bottom:0;right:0"></div>
+  <div class="w">
+    <div class="ew">The educational layer</div>
+    <div class="h2" style="margin-bottom:8px">Students learn.<br><span class="purple">Not just submit.</span></div>
+    <div class="accent" style="background:#A855F7"></div>
+    <div class="g2" style="margin-top:22px">
+      <div>
+        <div class="card cp" style="padding:22px;margin-bottom:14px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#A855F7;margin-bottom:14px">What Mi-Academy gives you</div>
+          <div class="row"><div class="dot dp"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Step-by-Step Breakdown</div><div style="font-size:11px;color:#64748B">Every solution explained as if you're telling your professor</div></div></div>
+          <div class="row"><div class="dot dp"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Defense Q&A (collapsed by default)</div><div style="font-size:11px;color:#64748B">Try answering before you reveal — real memorization technique</div></div></div>
+          <div class="row"><div class="dot dp"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Slide Speaker Script</div><div style="font-size:11px;color:#64748B">60-90 second spoken script for every presentation slide</div></div></div>
+          <div class="row"><div class="dot dp"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Mi-Vault — personal archive</div><div style="font-size:11px;color:#64748B">All missions saved, searchable, your academic library</div></div></div>
+        </div>
+        <div style="background:rgba(168,85,247,.04);border:1px solid rgba(168,85,247,.12);border-radius:12px;padding:18px">
+          <div style="font-size:11px;font-weight:700;color:#A855F7;margin-bottom:8px">Why this matters legally</div>
+          <div style="font-size:12px;color:#94A3B8;line-height:1.65">Mi-Academy is what separates Mi from AI homework tools. Every assignment includes educational breakdowns that position Mi as a <span style="color:#fff">study aid</span>, not cheating. Students are guided to understand and defend the work as their own.</div>
+          <div style="margin-top:12px;font-size:11px;font-style:italic;color:#334155;border-left:2px solid rgba(168,85,247,.3);padding-left:10px">"Mi-Assignment is an educational aid. Please ensure usage complies with your institution's academic integrity policy."</div>
+        </div>
+      </div>
+      <div class="card" style="padding:22px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155;margin-bottom:16px">The Academy experience</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="padding:12px;background:rgba(34,211,238,.04);border:1px solid rgba(34,211,238,.1);border-radius:8px">
+            <div style="font-size:10px;font-weight:700;color:#22D3EE;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px">Summary tab</div>
+            <div style="font-size:11px;color:#94A3B8">What was solved + key finding in 2-3 sentences. Instant understanding.</div>
+          </div>
+          <div style="padding:12px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:8px">
+            <div style="font-size:10px;font-weight:700;color:#fff;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px">Steps tab (expandable)</div>
+            <div style="font-size:11px;color:#94A3B8">Each step 400+ chars · click to expand · numbered · read like a lecture</div>
+          </div>
+          <div style="padding:12px;background:rgba(168,85,247,.04);border:1px solid rgba(168,85,247,.12);border-radius:8px">
+            <div style="font-size:10px;font-weight:700;color:#A855F7;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px">Defend tab (hidden answers)</div>
+            <div style="font-size:11px;color:#94A3B8">4 professor Q&A pairs. Click Q, try to answer, then reveal A. That's how students actually memorize.</div>
+          </div>
+          <div style="padding:12px;background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.12);border-radius:8px">
+            <div style="font-size:10px;font-weight:700;color:#10B981;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px">Slides tab</div>
+            <div style="font-size:11px;color:#94A3B8">Review all 10 slides with full speaker notes before presenting.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S8: BRAND -->
+<div class="sl" data-n="7">
+  <div class="tag">Brand</div><div class="pg">08 / 10</div>
+  <div class="w">
+    <div class="ew">Brand identity</div>
+    <div class="h2" style="margin-bottom:8px">Confident. Precise.<br><span class="grad">Built for the region.</span></div>
+    <div class="accent"></div>
+    <div class="g2" style="margin-top:22px">
+      <div>
+        <div class="card cc" style="padding:22px;margin-bottom:14px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#22D3EE;margin-bottom:14px">Brand voice</div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Confident</div><div style="font-size:11px;color:#64748B">We know MENA academia better than any tool alive</div></div></div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Precise</div><div style="font-size:11px;color:#64748B">No fluff — every output serves the student's grade</div></div></div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Regional</div><div style="font-size:11px;color:#64748B">Arabic-first, EGP-priced, MENA-coded</div></div></div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Educational</div><div style="font-size:11px;color:#64748B">We teach, we don't just solve — Mi-Academy proves it</div></div></div>
+        </div>
+        <div class="card" style="padding:22px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155;margin-bottom:14px">Positioning statement</div>
+          <div style="border-left:2px solid #22D3EE;padding-left:14px;margin-bottom:14px">
+            <div style="font-size:14px;font-style:italic;color:#CBD5E1;line-height:1.6">"The AI-powered academic engine built for MENA students — every assignment, every domain, submission-ready in minutes."</div>
+          </div>
+          <div style="font-size:12px;color:#64748B;line-height:1.6">Not a chatbot. Not a tutor. Not Chegg.<br>Mi is an <span style="color:#22D3EE">academic intelligence engine</span> — domain-specialist, output-obsessed, MENA-native.</div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="padding:22px;margin-bottom:14px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155;margin-bottom:14px">Color palette</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="width:40px;height:40px;border-radius:8px;background:#22D3EE;flex-shrink:0"></div>
+              <div><div style="font-size:13px;font-weight:600">Mi Cyan — #22D3EE</div><div style="font-size:11px;color:#64748B">Primary · Intelligence · Action</div></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="width:40px;height:40px;border-radius:8px;background:#A855F7;flex-shrink:0"></div>
+              <div><div style="font-size:13px;font-weight:600">Mi Purple — #A855F7</div><div style="font-size:11px;color:#64748B">Secondary · Creativity · Academy</div></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="width:40px;height:40px;border-radius:8px;background:#0F172A;border:1px solid rgba(255,255,255,.1);flex-shrink:0"></div>
+              <div><div style="font-size:13px;font-weight:600">Mi Navy — #0F172A</div><div style="font-size:11px;color:#64748B">Background · Authority · Focus</div></div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+              <div style="width:40px;height:40px;border-radius:8px;background:linear-gradient(135deg,#22D3EE,#A855F7);flex-shrink:0"></div>
+              <div><div style="font-size:13px;font-weight:600">Mi Gradient</div><div style="font-size:11px;color:#64748B">CTAs · Energy · Launch moments</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card cp" style="padding:20px">
+          <div style="font-size:22px;font-weight:700;line-height:1.2;margin-bottom:10px">Submit in <span class="cyan">3 min</span>.<br>Understand in <span class="purple">30</span>.</div>
+          <div style="font-size:12px;color:#94A3B8;line-height:1.6">Students get the submission AND learn how to defend it. Mi-Academy ensures the work belongs to the student — not just the AI.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S9: GTM FOR STUDENTS -->
+<div class="sl" data-n="8">
+  <div class="tag">Growth</div><div class="pg">09 / 10</div>
+  <div class="w">
+    <div class="ew">How students find Mi</div>
+    <div class="h2" style="margin-bottom:8px">Exam season.<br><span class="cyan">TikTok. WhatsApp. Word of mouth.</span></div>
+    <div class="accent"></div>
+    <div class="g3" style="margin-top:22px;margin-bottom:16px">
+      <div class="card cc" style="padding:20px">
+        <div style="font-size:24px;margin-bottom:10px">📱</div>
+        <div class="h3" style="font-size:14px">TikTok-first</div>
+        <div style="font-size:12px;color:#64748B;line-height:1.6;margin-bottom:10px">"Solved my GUC engineering assignment in 3 minutes." Real output, real assignment, real student — no ad budget needed during exam season peak.</div>
+        <div style="font-size:11px;font-weight:700;color:#22D3EE">Peak: May/June + December</div>
+      </div>
+      <div class="card" style="padding:20px">
+        <div style="font-size:24px;margin-bottom:10px">💬</div>
+        <div class="h3" style="font-size:14px">WhatsApp groups</div>
+        <div style="font-size:12px;color:#64748B;line-height:1.6;margin-bottom:10px">Every Egyptian university has department groups with 200–500 students. One referral link from a trusted peer converts immediately — no cold funnel.</div>
+        <div style="font-size:11px;font-weight:700;color:#A855F7">50 groups · 5K direct reach</div>
+      </div>
+      <div class="card" style="padding:20px">
+        <div style="font-size:24px;margin-bottom:10px">🏫</div>
+        <div class="h3" style="font-size:14px">Campus ambassadors</div>
+        <div style="font-size:12px;color:#64748B;line-height:1.6;margin-bottom:10px">Commission-based student reps per university. Self-funding model — ambassadors earn from every subscription they drive. Scalable to 30+ unis.</div>
+        <div style="font-size:11px;font-weight:700;color:#10B981">20 ambassadors · 30 unis</div>
+      </div>
+    </div>
+    <div class="card" style="padding:20px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155;margin-bottom:14px">Why organic growth works for Mi</div>
+      <div class="g3">
+        <div class="row"><div class="dot"></div><div><div style="font-size:12px;font-weight:600;color:#fff">Urgency is built-in</div><div style="font-size:11px;color:#64748B">Exam deadlines create natural FOMO — no persuasion needed, just visibility at the right moment</div></div></div>
+        <div class="row"><div class="dot dp"></div><div><div style="font-size:12px;font-weight:600;color:#fff">Social proof loops fast</div><div style="font-size:11px;color:#64748B">Students compare grades. One student submitting better work triggers immediate peer interest</div></div></div>
+        <div class="row"><div class="dot dg"></div><div><div style="font-size:12px;font-weight:600;color:#fff">Zero CAC potential</div><div style="font-size:11px;color:#64748B">Referral system turns every satisfied student into a sales channel — free missions for referrals</div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S10: CLOSE -->
+<div class="sl" data-n="9">
+  <div class="orb" style="width:800px;height:800px;background:radial-gradient(circle,rgba(34,211,238,.05),transparent 65%);top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+  <div class="pg">10 / 10</div>
+  <div class="w" style="text-align:center">
+    <div class="cs fl">
+      <div class="c3">
+        <div class="cf a">Mi</div><div class="cf b">Mi</div>
+        <div class="cf c">Mi</div><div class="cf d">Mi</div>
+        <div class="cf e"></div><div class="cf f"></div>
+      </div>
+    </div>
+    <div class="ew" style="margin-bottom:16px">Try it now — 3 free missions</div>
+    <div class="h1" style="margin-bottom:16px;font-size:clamp(28px,4vw,54px)">The academic engine<br>MENA has been <span class="grad">waiting for.</span></div>
+    <div class="body" style="margin:0 auto 32px;max-width:480px;font-size:14px;line-height:1.7">3 free missions. No card. No signup friction.<br>Experience exactly what 12 million MENA students need.</div>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:36px">
+      <a href="https://www.mi-assignment.com" style="display:inline-flex;align-items:center;gap:8px;padding:13px 26px;background:linear-gradient(135deg,#22D3EE,#A855F7);color:#000;font-weight:700;border-radius:10px;text-decoration:none;font-size:13px">🌐 www.mi-assignment.com</a>
+      <a href="https://wa.me/201107743984" style="display:inline-flex;align-items:center;gap:8px;padding:13px 26px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);color:#fff;font-weight:600;border-radius:10px;text-decoration:none;font-size:13px">💬 WhatsApp</a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:1px;max-width:720px;margin:0 auto;background:rgba(255,255,255,.05);border-radius:12px;overflow:hidden">
+      <div style="background:#08090D;padding:16px;text-align:center"><div style="font-size:20px;font-weight:700;color:#22D3EE">94</div><div style="font-size:8px;color:#1E293B;text-transform:uppercase;letter-spacing:.08em;margin-top:2px">Unis</div></div>
+      <div style="background:#08090D;padding:16px;text-align:center"><div style="font-size:20px;font-weight:700;color:#22D3EE">7</div><div style="font-size:8px;color:#1E293B;text-transform:uppercase;letter-spacing:.08em;margin-top:2px">Domains</div></div>
+      <div style="background:#08090D;padding:16px;text-align:center"><div style="font-size:20px;font-weight:700;color:#22D3EE">99%</div><div style="font-size:8px;color:#1E293B;text-transform:uppercase;letter-spacing:.08em;margin-top:2px">Margin</div></div>
+      <div style="background:#08090D;padding:16px;text-align:center"><div style="font-size:20px;font-weight:700;color:#22D3EE">$20</div><div style="font-size:8px;color:#1E293B;text-transform:uppercase;letter-spacing:.08em;margin-top:2px">Semester</div></div>
+      <div style="background:#08090D;padding:16px;text-align:center"><div style="font-size:20px;font-weight:700;color:#22D3EE">12M</div><div style="font-size:8px;color:#1E293B;text-transform:uppercase;letter-spacing:.08em;margin-top:2px">Students</div></div>
+      <div style="background:#08090D;padding:16px;text-align:center"><div style="font-size:20px;font-weight:700;color:#22D3EE">0</div><div style="font-size:8px;color:#1E293B;text-transform:uppercase;letter-spacing:.08em;margin-top:2px">Competitors</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nb" id="pb" disabled>&#8592;</button>
+  <div class="pip" id="dt"></div>
+  <button class="nb" id="nb">&#8594;</button>
+</div>
+</div>
+
+<script>
+const S=document.querySelectorAll('.sl'),N=S.length;
+let c=0;
+const dt=document.getElementById('dt');
+for(let i=0;i<N;i++){const d=document.createElement('div');d.className='p'+(i===0?' a':'');d.onclick=()=>go(i);dt.appendChild(d)}
+function go(n){
+  if(n===c||n<0||n>=N)return;
+  S[c].classList.remove('in');S[c].classList.add('out');
+  const p=c;setTimeout(()=>S[p]?.classList.remove('out'),570);
+  c=n;S[c].classList.add('in');
+  document.querySelectorAll('.p').forEach((d,i)=>d.classList.toggle('a',i===c));
+  document.getElementById('pb').disabled=c===0;
+  document.getElementById('nb').disabled=c===N-1;
+}
+document.getElementById('pb').onclick=()=>go(c-1);
+document.getElementById('nb').onclick=()=>go(c+1);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')go(c+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1)});
+document.getElementById('pb').disabled=true;
+
+const DOMS=[
+  {i:'⚙️',n:'Engineering',d:'Full structural and process engineering with regional standards. Given/Find/Solution/Check format with mandatory self-verification.',f:['ECP 203-2018 (Egypt) · SBC 304 (Saudi) · UAE Building Code','SVG cross-section with bars, covers, dimensions','Bar Bending Schedule (BBS) — BS 8666 compliance','Sizing_Calculator.xlsx for solar, HVAC, RO systems','Safety factors + mandatory self-check after each calc']},
+  {i:'🏥',n:'Medical',d:'Clinical case analysis with MENA healthcare guidelines. Complete management plans with drug interactions.',f:['SOAP note mandatory: Subjective → Objective → Assessment → Plan','MONA protocol for cardiac · STEMI/NSTEMI classification','Drug_Interaction_Matrix.csv + Patient_Education_Leaflet.txt','Egyptian MOH · Saudi MOH · UAE MOHAP/DHA guidelines','Differential diagnosis min 3, ranked by probability']},
+  {i:'⚖️',n:'Law',d:'Legal analysis using regional civil codes. IRAC structure with proper citation and bilingual notice templates.',f:['IRAC mandatory: Issue → Rule → Application → Conclusion','Egyptian Civil Code (Law 131/1948) cited by article number','CRCICA (Cairo) · DIAC (Dubai) · SCCA (Saudi) arbitration','Force Majeure analysis under Article 165 ECC','Bilingual Arabic/English formal notice templates']},
+  {i:'💻',n:'Computer Science',d:'Complete database and software engineering solutions with working code, ER diagrams, and full documentation.',f:['ER diagrams as SVG — PKs, FKs, cardinality (1:1, 1:N, M:N)','1NF → 2NF → 3NF normalization with example tables','SQL CREATE with constraints · sample INSERT/SELECT','README with setup · dependencies · how to run','Big O time + space complexity for all algorithms']},
+  {i:'📊',n:'Business',d:'Strategic analysis with financial modeling. PESTEL and SWOT as mandatory table blocks with real calculations.',f:['PESTEL as table [Factor, Analysis, Impact Level]','SWOT as 2×2 table · Porter Five Forces analysis','NPV/IRR/DCF calculations with 5-year projections','Financial_Projections.xlsx + DCF_Valuation_Model.xlsx','Vision 2030 integration for Saudi assignments']},
+  {i:'🔢',n:'Math / Stats',d:'Rigorous mathematical solutions with full LaTeX notation, verified answers, and realistic MENA datasets.',f:['Every algebraic step in LaTeX notation','Lagrange multipliers · optimization · second derivative test','Boxed final answers with units always labeled','24-month dataset generation (realistic MENA economic data)','All formulas: \\frac, \\sum, \\int, \\nabla, \\lambda etc.']},
+  {i:'📚',n:'Humanities',d:'Academic essays and critical analysis with proper citation styles matched to the curriculum.',f:['Thesis-driven: one arguable claim the whole paper defends','APA 7th · Harvard · Chicago — matched to curriculum','Minimum 2 counter-arguments with rebuttals','Alternative theoretical frameworks always included','FACTUAL INTEGRITY: never invents quotes or dates']},
+];
+function showD(i){
+  document.querySelectorAll('[id^="db"]').forEach((b,j)=>{
+    b.style.borderColor=j===i?'rgba(34,211,238,.4)':'';
+    b.style.background=j===i?'rgba(34,211,238,.06)':'';
+  });
+  const d=DOMS[i];
+  document.getElementById('dc').innerHTML=`
+    <div style="font-size:28px;margin-bottom:10px">${d.i}</div>
+    <div style="font-size:17px;font-weight:700;margin-bottom:7px">${d.n}</div>
+    <div style="font-size:12px;color:#94A3B8;line-height:1.65;margin-bottom:14px">${d.d}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+      ${d.f.map(f=>`<div style="display:flex;align-items:flex-start;gap:7px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)"><div style="width:5px;height:5px;border-radius:50%;background:#22D3EE;margin-top:4px;flex-shrink:0"></div><span style="font-size:11px;color:#94A3B8">${f}</span></div>`).join('')}
+    </div>`;
+}
+</script>
+</body>
+</html>

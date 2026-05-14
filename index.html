@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mi-Assignment — Investor Deck</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#08090D;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',sans-serif;color:#fff}
+:root{--c:#22D3EE;--p:#A855F7;--w:960px}
+#app{width:100%;height:100vh;position:relative;overflow:hidden}
+
+/* SLIDE ENGINE */
+.sl{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 88px;opacity:0;pointer-events:none;transition:opacity .6s cubic-bezier(.22,1,.36,1),transform .6s cubic-bezier(.22,1,.36,1);transform:translateX(60px)}
+.sl.in{opacity:1;pointer-events:all;transform:none}
+.sl.out{opacity:0;transform:translateX(-60px)}
+
+/* BG */
+.bg{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.bg-line{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.04)}
+.bg-vline{position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.04)}
+.glow{position:absolute;border-radius:50%;pointer-events:none}
+
+/* NAV */
+.nav{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;z-index:99}
+.arr{width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:rgba(255,255,255,.5);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s;user-select:none;backdrop-filter:blur(8px)}
+.arr:hover{border-color:rgba(34,211,238,.4);color:#22D3EE;background:rgba(34,211,238,.06)}
+.arr:disabled{opacity:.2;cursor:default}
+.pip{display:flex;gap:5px;align-items:center}
+.p{width:4px;height:4px;border-radius:99px;background:rgba(255,255,255,.2);cursor:pointer;transition:all .35s}
+.p.a{background:#22D3EE;width:20px}
+
+/* LABELS */
+.tag{position:absolute;top:28px;left:40px;font-size:9px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:rgba(34,211,238,.5)}
+.pg{position:absolute;top:28px;right:40px;font-size:10px;color:rgba(255,255,255,.15);letter-spacing:.08em;font-weight:500}
+.kh{position:absolute;bottom:30px;right:40px;font-size:9px;color:rgba(255,255,255,.15)}
+.kh kbd{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:3px;padding:1px 5px;font-size:9px}
+
+/* TYPE */
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:#22D3EE;margin-bottom:14px}
+.h1{font-size:clamp(36px,5vw,72px);font-weight:700;line-height:1.02;letter-spacing:-.04em;color:#fff}
+.h2{font-size:clamp(22px,3.2vw,44px);font-weight:700;line-height:1.06;letter-spacing:-.03em}
+.h3{font-size:16px;font-weight:600;color:#fff;margin-bottom:6px}
+.body{font-size:14px;color:#64748B;line-height:1.7}
+.muted{color:#334155;font-size:12px}
+.cyan{color:#22D3EE}.purple{color:#A855F7}.green{color:#10B981}.red{color:#EF4444}
+.grad{background:linear-gradient(135deg,#22D3EE 0%,#A855F7 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* DIVIDER */
+.line{width:1px;background:rgba(255,255,255,.06);height:100%}
+.hline{height:1px;background:rgba(255,255,255,.06);width:100%}
+.accent{width:32px;height:2px;background:#22D3EE;border-radius:1px;margin:16px 0}
+
+/* CARDS */
+.card{background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);border-radius:16px;padding:24px}
+.card-c{border-color:rgba(34,211,238,.18);background:rgba(34,211,238,.04)}
+.card-p{border-color:rgba(168,85,247,.18);background:rgba(168,85,247,.04)}
+.card-g{border-color:rgba(16,185,129,.18);background:rgba(16,185,129,.04)}
+
+/* STAT */
+.stat{font-size:clamp(32px,4vw,56px);font-weight:700;color:#22D3EE;letter-spacing:-.04em;line-height:1}
+.stat-sm{font-size:28px;font-weight:700;color:#22D3EE;letter-spacing:-.03em;line-height:1}
+.slabel{font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#334155;margin-top:5px}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;max-width:var(--w)}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;width:100%;max-width:var(--w)}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;width:100%;max-width:var(--w)}
+.w{width:100%;max-width:var(--w);position:relative;z-index:1}
+
+/* BAR */
+.btrack{background:rgba(255,255,255,.05);border-radius:2px;height:4px;overflow:hidden;margin:6px 0}
+.bfill{height:100%;border-radius:2px;background:linear-gradient(90deg,#22D3EE,#A855F7);transition:width 1.4s cubic-bezier(.4,0,.2,1)}
+
+/* ROW */
+.row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+.row:last-child{border:none}
+.dot{width:6px;height:6px;border-radius:50%;background:#22D3EE;margin-top:6px;flex-shrink:0}
+.dot-p{background:#A855F7}
+.dot-g{background:#10B981}
+.dot-y{background:#FBBF24}
+.dot-r{background:#EF4444}
+
+/* INTERACTIVE */
+.slider-wrap{margin-bottom:20px}
+.slider-wrap label{display:flex;justify-content:space-between;font-size:11px;color:#64748B;margin-bottom:8px}
+.slider-wrap label span{color:#22D3EE;font-weight:700;font-size:13px}
+input[type=range]{width:100%;height:4px;-webkit-appearance:none;background:rgba(255,255,255,.08);border-radius:2px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:#22D3EE;cursor:pointer;border:2px solid #08090D}
+.big-num{font-size:52px;font-weight:700;background:linear-gradient(135deg,#22D3EE,#A855F7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:-.04em;line-height:1}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:12px}
+.tbl th{text-align:left;padding:10px 14px;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:#334155;font-weight:700;border-bottom:1px solid rgba(255,255,255,.06)}
+.tbl td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.03);color:#94A3B8}
+.tbl tr.hl td{background:rgba(34,211,238,.03);color:#fff}
+.tbl tr.hl td:first-child{color:#22D3EE;font-weight:700}
+
+/* TIMELINE */
+.tl{display:flex;gap:0;align-items:stretch;position:relative;margin-bottom:8px}
+.tl-node{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:24px}
+.tl-dot{width:10px;height:10px;border-radius:50%;background:#22D3EE;flex-shrink:0;position:relative;z-index:1}
+.tl-dot.future{background:#1E293B;border:1px solid rgba(34,211,238,.3)}
+.tl-line{width:2px;background:linear-gradient(#22D3EE,rgba(34,211,238,.1));flex:1;margin-top:2px}
+.tl-content{flex:1;padding-bottom:20px;padding-left:4px}
+
+/* ANIM */
+@keyframes fi{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes rk{to{transform:rotateX(360deg) rotateY(540deg)}}
+@keyframes pu{0%,100%{opacity:.4;transform:scale(.95)}50%{opacity:1;transform:scale(1.05)}}
+.stg>*{opacity:0;animation:fi .5s ease forwards}
+.stg>:nth-child(1){animation-delay:.07s}.stg>:nth-child(2){animation-delay:.14s}
+.stg>:nth-child(3){animation-delay:.21s}.stg>:nth-child(4){animation-delay:.28s}
+.stg>:nth-child(5){animation-delay:.35s}.stg>:nth-child(6){animation-delay:.42s}
+.fl{animation:fl 5s ease-in-out infinite}
+
+/* CUBE */
+.cs{perspective:320px;width:80px;height:80px;margin:0 auto 28px}
+.c3{width:100%;height:100%;transform-style:preserve-3d;animation:rk 10s linear infinite}
+.cf{position:absolute;width:44px;height:44px;top:18px;left:18px;border:1px solid rgba(34,211,238,.3);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#22D3EE;backface-visibility:hidden;letter-spacing:-.02em}
+.cf.a{transform:translateZ(22px);background:rgba(34,211,238,.08)}
+.cf.b{transform:rotateY(180deg) translateZ(22px);background:rgba(168,85,247,.08);color:#A855F7}
+.cf.c{transform:rotateY(90deg) translateZ(22px);background:rgba(34,211,238,.04)}
+.cf.d{transform:rotateY(-90deg) translateZ(22px);background:rgba(168,85,247,.04)}
+.cf.e{transform:rotateX(90deg) translateZ(22px);background:rgba(255,255,255,.02)}
+.cf.f{transform:rotateX(-90deg) translateZ(22px);background:rgba(255,255,255,.01)}
+
+/* LOGO MARK */
+.logomark{display:inline-flex;align-items:center;gap:10px;margin-bottom:20px}
+.logomark-cube{width:32px;height:32px;background:linear-gradient(135deg,rgba(34,211,238,.2),rgba(168,85,247,.2));border:1px solid rgba(34,211,238,.3);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#22D3EE}
+.logomark-text{font-size:15px;font-weight:700;letter-spacing:-.02em}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- BG GRID -->
+<div class="bg">
+  <div class="bg-line" style="top:20%"></div><div class="bg-line" style="top:40%"></div>
+  <div class="bg-line" style="top:60%"></div><div class="bg-line" style="top:80%"></div>
+  <div class="bg-vline" style="left:25%"></div><div class="bg-vline" style="left:50%"></div><div class="bg-vline" style="left:75%"></div>
+</div>
+
+<!-- ═══ SLIDE 01 — COVER ═══ -->
+<div class="sl in" data-n="0">
+  <div class="glow" style="width:600px;height:600px;background:radial-gradient(circle,rgba(34,211,238,.07),transparent 70%);top:-200px;left:-100px"></div>
+  <div class="glow" style="width:500px;height:500px;background:radial-gradient(circle,rgba(168,85,247,.07),transparent 70%);bottom:-150px;right:-100px"></div>
+  <div class="w" style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center">
+    <div>
+      <div class="logomark stg">
+        <div class="logomark-cube">Mi</div>
+        <div class="logomark-text">Mi-Assignment</div>
+      </div>
+      <div class="eyebrow stg">Pre-Seed · 2025</div>
+      <div class="h1 stg" style="margin-bottom:20px">The <span class="grad">Academic Engine</span> for MENA Students</div>
+      <div class="body stg" style="max-width:420px;font-size:15px;line-height:1.7;margin-bottom:32px">AI-powered. Submission-ready. Built exclusively for Egypt, Saudi Arabia, UAE — and every university in between.</div>
+      <div style="display:flex;gap:24px" class="stg">
+        <div><div class="stat" style="font-size:36px">12M+</div><div class="slabel">addressable students</div></div>
+        <div style="width:1px;background:rgba(255,255,255,.06)"></div>
+        <div><div class="stat" style="font-size:36px">$2.4B</div><div class="slabel">MENA EdTech market</div></div>
+        <div style="width:1px;background:rgba(255,255,255,.06)"></div>
+        <div><div class="stat" style="font-size:36px">99%</div><div class="slabel">gross margin</div></div>
+      </div>
+    </div>
+    <div style="text-align:center">
+      <div class="cs fl">
+        <div class="c3">
+          <div class="cf a">Mi</div><div class="cf b">Mi</div>
+          <div class="cf c">Mi</div><div class="cf d">Mi</div>
+          <div class="cf e"></div><div class="cf f"></div>
+        </div>
+      </div>
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:20px">
+        <div style="font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:#334155;margin-bottom:12px">Presented by</div>
+        <div style="font-size:18px;font-weight:700;margin-bottom:3px">Zeyad El-Sayed</div>
+        <div style="font-size:12px;color:#64748B">Founder & CEO · Mi-Assignment</div>
+        <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between">
+          <div style="font-size:11px;color:#22D3EE">mi-assignment.com</div>
+          <div style="font-size:11px;color:#64748B">Cairo, Egypt</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="kh"><kbd>→</kbd> navigate</div>
+</div>
+
+<!-- ═══ SLIDE 02 — THE PROBLEM ═══ -->
+<div class="sl" data-n="1">
+  <div class="tag">01 — Problem</div><div class="pg">02 / 12</div>
+  <div class="glow" style="width:400px;height:400px;background:radial-gradient(circle,rgba(239,68,68,.05),transparent 70%);top:0;right:0"></div>
+  <div class="w">
+    <div class="eyebrow">The gap we're filling</div>
+    <div class="h2" style="margin-bottom:8px">12 million students.<br><span style="color:#EF4444">Zero tools built for them.</span></div>
+    <div class="accent"></div>
+    <div class="g2" style="margin-top:24px">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card" style="padding:20px">
+          <div style="font-size:24px;margin-bottom:10px">💸</div>
+          <div class="h3">Private tutors cost 500–2,000 EGP/hr</div>
+          <div class="body" style="font-size:13px">Most MENA students simply cannot afford consistent tutoring. For complex domains — engineering, law, medical — the gap is widest.</div>
+        </div>
+        <div class="card" style="padding:20px">
+          <div style="font-size:24px;margin-bottom:10px">🌍</div>
+          <div class="h3">Generic AI tools don't understand MENA</div>
+          <div class="body" style="font-size:13px">ChatGPT doesn't know ECP 203, Egyptian Civil Code, or MOHAP guidelines. Students get generic answers that fail local academic standards.</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card card-c" style="padding:20px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#22D3EE;margin-bottom:16px">The market reality</div>
+          <div class="row"><div class="dot dot-r"></div><div><div style="font-size:13px;font-weight:600;color:#fff">82% of students use AI for assignments</div><div class="body" style="font-size:12px;margin-top:2px">0% of those tools are built for MENA standards</div></div></div>
+          <div class="row"><div class="dot dot-r"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Exam season demand spikes 10×</div><div class="body" style="font-size:12px;margin-top:2px">May/June + December — two windows where students are desperate</div></div></div>
+          <div class="row"><div class="dot dot-r"></div><div><div style="font-size:13px;font-weight:600;color:#fff">No MENA-native payment rails</div><div class="body" style="font-size:12px;margin-top:2px">Chegg and Western tools require credit cards most students don't have</div></div></div>
+          <div class="row"><div class="dot dot-r"></div><div><div style="font-size:13px;font-weight:600;color:#fff">No Arabic RTL academic tool exists</div><div class="body" style="font-size:12px;margin-top:2px">Every EdTech product treats Arabic as an afterthought</div></div></div>
+        </div>
+        <div style="background:rgba(239,68,68,.04);border:1px solid rgba(239,68,68,.12);border-radius:12px;padding:16px">
+          <div style="font-size:22px;font-weight:700;color:#EF4444;margin-bottom:4px">$0</div>
+          <div style="font-size:12px;color:#64748B">spent by any competitor specifically building for MENA academic standards</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 03 — SOLUTION ═══ -->
+<div class="sl" data-n="2">
+  <div class="tag">02 — Solution</div><div class="pg">03 / 12</div>
+  <div class="glow" style="width:500px;height:500px;background:radial-gradient(circle,rgba(34,211,238,.06),transparent 70%);top:-100px;right:-50px"></div>
+  <div class="w">
+    <div class="eyebrow">What Mi does</div>
+    <div class="h2" style="margin-bottom:8px">One prompt.<br><span class="cyan">Submission-ready in minutes.</span></div>
+    <div class="accent"></div>
+    <div class="g2" style="margin-top:24px">
+      <div>
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:20px">
+          <div class="card" style="flex:1;text-align:center;padding:16px;border-radius:12px 0 0 12px">
+            <div style="font-size:20px;margin-bottom:6px">📝</div>
+            <div style="font-size:10px;font-weight:700;color:#22D3EE;letter-spacing:.12em;text-transform:uppercase">Input</div>
+            <div style="font-size:11px;color:#64748B;margin-top:4px">Assignment brief + university</div>
+          </div>
+          <div style="font-size:18px;color:rgba(34,211,238,.4);padding:0 8px">→</div>
+          <div class="card card-c" style="flex:1;text-align:center;padding:16px;border-radius:0">
+            <div style="font-size:20px;margin-bottom:6px">🧠</div>
+            <div style="font-size:10px;font-weight:700;color:#A855F7;letter-spacing:.12em;text-transform:uppercase">Mi-CORE</div>
+            <div style="font-size:11px;color:#64748B;margin-top:4px">Domain-specialist AI engine</div>
+          </div>
+          <div style="font-size:18px;color:rgba(34,211,238,.4);padding:0 8px">→</div>
+          <div class="card" style="flex:1;text-align:center;padding:16px;border-radius:0 12px 12px 0">
+            <div style="font-size:20px;margin-bottom:6px">📦</div>
+            <div style="font-size:10px;font-weight:700;color:#22D3EE;letter-spacing:.12em;text-transform:uppercase">Output</div>
+            <div style="font-size:11px;color:#64748B;margin-top:4px">PDF · DOCX · PPTX · ZIP</div>
+          </div>
+        </div>
+        <div class="card card-c" style="padding:20px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#22D3EE;margin-bottom:14px">What makes Mi different</div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Regional academic standards baked in</div><div class="body" style="font-size:11px">ECP 203 · Egyptian Civil Code · MOHAP · SBC · UAE code</div></div></div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">7 domain-specialist AI engines</div><div class="body" style="font-size:11px">Engineering · Medical · Law · CS · Business · Math · Humanities</div></div></div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Full output package — not just text</div><div class="body" style="font-size:11px">PDF, Word, PowerPoint (10 slides + real images), SVG diagrams, Excel</div></div></div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Mi-Academy — educational moat</div><div class="body" style="font-size:11px">Every mission becomes a study guide + professor Q&A — legal and educational positioning</div></div></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#334155;margin-bottom:14px">94 universities. 58 majors.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:20px">
+          <span style="font-size:10px;background:rgba(34,211,238,.08);color:#22D3EE;padding:3px 8px;border-radius:5px;font-weight:600">GUC</span>
+          <span style="font-size:10px;background:rgba(34,211,238,.08);color:#22D3EE;padding:3px 8px;border-radius:5px;font-weight:600">AUC</span>
+          <span style="font-size:10px;background:rgba(34,211,238,.08);color:#22D3EE;padding:3px 8px;border-radius:5px;font-weight:600">Cairo University</span>
+          <span style="font-size:10px;background:rgba(34,211,238,.08);color:#22D3EE;padding:3px 8px;border-radius:5px;font-weight:600">KSU</span>
+          <span style="font-size:10px;background:rgba(34,211,238,.08);color:#22D3EE;padding:3px 8px;border-radius:5px;font-weight:600">KFUPM</span>
+          <span style="font-size:10px;background:rgba(34,211,238,.08);color:#22D3EE;padding:3px 8px;border-radius:5px;font-weight:600">AUB</span>
+          <span style="font-size:10px;background:rgba(34,211,238,.08);color:#22D3EE;padding:3px 8px;border-radius:5px;font-weight:600">UAEU</span>
+          <span style="font-size:10px;background:rgba(34,211,238,.08);color:#22D3EE;padding:3px 8px;border-radius:5px;font-weight:600">MSA</span>
+          <span style="font-size:10px;background:rgba(168,85,247,.08);color:#A855F7;padding:3px 8px;border-radius:5px;font-weight:600">+86 more</span>
+        </div>
+        <div class="card" style="padding:18px;margin-bottom:12px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#334155;margin-bottom:10px">Full output package</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <div style="font-size:11px;color:#94A3B8;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px">📄 Submission PDF</div>
+            <div style="font-size:11px;color:#94A3B8;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px">📝 Word (.docx)</div>
+            <div style="font-size:11px;color:#94A3B8;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px">📊 PowerPoint (10 slides)</div>
+            <div style="font-size:11px;color:#94A3B8;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px">📐 SVG diagrams</div>
+            <div style="font-size:11px;color:#94A3B8;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px">📈 Excel (.xlsx)</div>
+            <div style="font-size:11px;color:#94A3B8;padding:6px 10px;background:rgba(255,255,255,.03);border-radius:6px">💾 Source code files</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 04 — MARKET ═══ -->
+<div class="sl" data-n="3">
+  <div class="tag">03 — Market</div><div class="pg">04 / 12</div>
+  <div class="w">
+    <div class="eyebrow">The opportunity</div>
+    <div class="h2" style="margin-bottom:8px">Massive. Underserved.<br><span class="cyan">Zero direct competition.</span></div>
+    <div class="accent"></div>
+    <div class="g3" style="margin:24px 0 20px">
+      <div class="card" style="text-align:center;padding:28px 16px">
+        <div class="stat">12M+</div>
+        <div class="slabel">University students<br>in MENA</div>
+        <div style="font-size:11px;color:#1E293B;margin-top:10px">Egypt · Saudi · UAE<br>Lebanon · Jordan · Kuwait</div>
+      </div>
+      <div class="card card-c" style="text-align:center;padding:28px 16px">
+        <div class="stat">$2.4B</div>
+        <div class="slabel">MENA EdTech<br>market 2025</div>
+        <div style="font-size:11px;color:#1E293B;margin-top:10px">22% CAGR · accelerating</div>
+      </div>
+      <div class="card" style="text-align:center;padding:28px 16px">
+        <div class="stat">$50M</div>
+        <div class="slabel">Year 1 serviceable<br>market (Egypt)</div>
+        <div style="font-size:11px;color:#1E293B;margin-top:10px">50K reachable students<br>@ 1,000 EGP/quarter</div>
+      </div>
+    </div>
+    <div style="background:rgba(34,211,238,.03);border:1px solid rgba(34,211,238,.1);border-radius:14px;padding:22px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#22D3EE;margin-bottom:18px">Market Sizing — TAM / SAM / SOM</div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+            <div><span style="font-size:13px;font-weight:600;color:#fff">TAM</span><span style="font-size:11px;color:#64748B;margin-left:8px">All MENA university students</span></div>
+            <div style="font-size:13px;font-weight:700;color:#fff">12M students · ~$2.4B</div>
+          </div>
+          <div class="btrack"><div class="bfill" style="width:100%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+            <div><span style="font-size:13px;font-weight:600;color:#fff">SAM</span><span style="font-size:11px;color:#64748B;margin-left:8px">Arabic-English, tech-savvy, 18–26</span></div>
+            <div style="font-size:13px;font-weight:700;color:#fff">3M students · ~$600M</div>
+          </div>
+          <div class="btrack"><div class="bfill" style="width:44%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+            <div><span style="font-size:13px;font-weight:600;color:#fff">SOM</span><span style="font-size:11px;color:#64748B;margin-left:8px">Year 1 target — Egypt only</span></div>
+            <div style="font-size:13px;font-weight:700;color:#22D3EE">50K students · ~$50M</div>
+          </div>
+          <div class="btrack"><div class="bfill" style="width:8%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 05 — BUSINESS MODEL ═══ -->
+<div class="sl" data-n="4">
+  <div class="tag">04 — Business Model</div><div class="pg">05 / 12</div>
+  <div class="glow" style="width:400px;height:400px;background:radial-gradient(circle,rgba(168,85,247,.05),transparent 70%);bottom:0;right:0"></div>
+  <div class="w">
+    <div class="eyebrow">How we make money</div>
+    <div class="h2" style="margin-bottom:8px">SaaS subscription.<br><span class="grad">~99% gross margin.</span></div>
+    <div class="accent"></div>
+    <div class="g2" style="margin-top:24px">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card" style="padding:22px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#334155;margin-bottom:14px">Pricing tiers</div>
+          <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.05)">
+            <div style="font-size:12px;color:#64748B;margin-bottom:4px">Free</div>
+            <div style="font-size:28px;font-weight:700;color:#fff;letter-spacing:-.02em">0 EGP <span style="font-size:14px;color:#334155">/ 3 missions</span></div>
+            <div style="font-size:11px;color:#334155;margin-top:3px">Full quality — no card required — conversion funnel entry</div>
+          </div>
+          <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.05)">
+            <div style="font-size:12px;color:#64748B;margin-bottom:4px">Pro Monthly</div>
+            <div style="font-size:28px;font-weight:700;color:#22D3EE;letter-spacing:-.02em">350 EGP <span style="font-size:14px;color:#334155">/ 30 days</span></div>
+            <div style="font-size:11px;color:#334155;margin-top:3px">≈ $7 USD · 25 missions · all exports</div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+              <div style="font-size:12px;color:#64748B">Pro Quarterly</div>
+              <div style="background:linear-gradient(135deg,#22D3EE,#A855F7);color:#000;font-size:8px;font-weight:800;padding:2px 8px;border-radius:99px;letter-spacing:.08em">BEST VALUE</div>
+            </div>
+            <div style="font-size:28px;font-weight:700;color:#22D3EE;letter-spacing:-.02em">1,000 EGP <span style="font-size:14px;color:#334155">/ 90 days</span></div>
+            <div style="font-size:11px;color:#334155;margin-top:3px">≈ $20 USD · 60 missions · full semester · save 14%</div>
+          </div>
+        </div>
+        <div class="card" style="padding:18px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#334155;margin-bottom:12px">MENA Payment Rails</div>
+          <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff;font-weight:600">InstaPay</span> — mi-assignment@instapay · instant</div></div>
+          <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#fff;font-weight:600">Vodafone Cash</span> — 01107743984</div></div>
+          <div class="row"><div class="dot dot-y"></div><div style="font-size:12px;color:#94A3B8"><span style="color:#FBBF24;font-weight:600">Tap.company</span> — Q3 2025 (card + Apple Pay + STC)</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card card-c" style="padding:22px;margin-bottom:14px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#22D3EE;margin-bottom:18px">Unit Economics</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div>
+              <div class="stat-sm">~0.25</div>
+              <div class="slabel">EGP cost per mission</div>
+            </div>
+            <div>
+              <div class="stat-sm">1,000</div>
+              <div class="slabel">EGP revenue per user</div>
+            </div>
+            <div>
+              <div class="stat-sm" style="color:#10B981">~99%</div>
+              <div class="slabel">Gross margin</div>
+            </div>
+            <div>
+              <div class="stat-sm" style="color:#fff">~$195</div>
+              <div class="slabel">Infra cost @ 1K users/mo</div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="padding:20px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#334155;margin-bottom:12px">Why margin is so high</div>
+          <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8">Gemini API cost per mission: <span style="color:#fff">~0.25 EGP (~$0.005)</span></div></div>
+          <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8">All generation happens client-side (PDF, PPTX, XLSX) — <span style="color:#fff">zero server render cost</span></div></div>
+          <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8">Vercel + Supabase scales automatically — <span style="color:#fff">no ops team needed</span></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 06 — UNIT ECONOMICS INTERACTIVE ═══ -->
+<div class="sl" data-n="5">
+  <div class="tag">05 — Revenue Model</div><div class="pg">06 / 12</div>
+  <div class="w">
+    <div class="eyebrow">Interactive projection</div>
+    <div class="h2" style="margin-bottom:6px">Model your own scenario.</div>
+    <div class="body" style="margin-bottom:24px">Drag the sliders. Numbers update in real time.</div>
+    <div class="g2">
+      <div class="card" style="padding:26px">
+        <div class="slider-wrap">
+          <label>Monthly subscribers <span id="v1">200</span></label>
+          <input type="range" id="r1" min="50" max="5000" value="200" step="50">
+        </div>
+        <div class="slider-wrap">
+          <label>Avg price per user (EGP) <span id="v2">800</span></label>
+          <input type="range" id="r2" min="350" max="1000" value="800" step="50">
+        </div>
+        <div class="slider-wrap" style="margin-bottom:0">
+          <label>Monthly churn rate (%) <span id="v3">5%</span></label>
+          <input type="range" id="r3" min="2" max="20" value="5" step="1">
+        </div>
+        <div style="height:1px;background:rgba(255,255,255,.06);margin:20px 0"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="padding:12px;background:rgba(255,255,255,.03);border-radius:8px">
+            <div style="font-size:10px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">AI Cost</div>
+            <div style="font-size:16px;font-weight:700;color:#fff" id="vcost">~15 EGP/mo</div>
+          </div>
+          <div style="padding:12px;background:rgba(255,255,255,.03);border-radius:8px">
+            <div style="font-size:10px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">LTV</div>
+            <div style="font-size:16px;font-weight:700;color:#fff" id="vltv">16,000 EGP</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card card-c" style="padding:24px;text-align:center;flex:1;display:flex;flex-direction:column;justify-content:center">
+          <div style="font-size:10px;color:#334155;text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px">Monthly Revenue</div>
+          <div class="big-num" id="vmrr">160,000</div>
+          <div style="font-size:12px;color:#64748B;margin-top:4px">EGP / month</div>
+        </div>
+        <div class="card" style="padding:20px;flex:1">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div style="text-align:center">
+              <div style="font-size:10px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">Annual</div>
+              <div style="font-size:22px;font-weight:700;color:#A855F7" id="varr">1,920,000</div>
+              <div style="font-size:10px;color:#334155;margin-top:2px" id="vusd">~$38K USD</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:10px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px">Gross Margin</div>
+              <div style="font-size:22px;font-weight:700;color:#10B981" id="vmg">99%</div>
+              <div style="font-size:10px;color:#334155;margin-top:2px">after AI costs</div>
+            </div>
+          </div>
+          <div style="height:1px;background:rgba(255,255,255,.06);margin:14px 0"></div>
+          <div>
+            <div style="font-size:10px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">5K subscriber milestone</div>
+            <div style="font-size:18px;font-weight:700;color:#22D3EE">60M EGP / yr</div>
+            <div style="font-size:11px;color:#64748B">≈ $1.2M USD ARR</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 07 — COMPETITION ═══ -->
+<div class="sl" data-n="6">
+  <div class="tag">06 — Competition</div><div class="pg">07 / 12</div>
+  <div class="w">
+    <div class="eyebrow">Competitive landscape</div>
+    <div class="h2" style="margin-bottom:8px">We don't have a <span class="cyan">direct competitor.</span></div>
+    <div class="accent"></div>
+    <div style="margin-top:24px;overflow-x:auto">
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th style="color:#22D3EE">Mi-Assignment</th>
+            <th>ChatGPT Plus</th>
+            <th>Chegg</th>
+            <th>Private tutor</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="hl">
+            <td>MENA academic standards</td>
+            <td style="color:#10B981">✓ ECP 203 · Civil Code · MOHAP</td>
+            <td style="color:#EF4444">✗ Generic only</td>
+            <td style="color:#EF4444">✗</td>
+            <td style="color:#64748B">Depends</td>
+          </tr>
+          <tr class="hl">
+            <td>Submission-ready files</td>
+            <td style="color:#10B981">✓ PDF · DOCX · PPTX · ZIP</td>
+            <td style="color:#EF4444">✗ Text only</td>
+            <td style="color:#EF4444">✗ Text only</td>
+            <td style="color:#EF4444">✗</td>
+          </tr>
+          <tr class="hl">
+            <td>Arabic RTL interface</td>
+            <td style="color:#10B981">✓ Full Arabic</td>
+            <td style="color:#64748B">Partial</td>
+            <td style="color:#EF4444">✗</td>
+            <td style="color:#10B981">✓</td>
+          </tr>
+          <tr class="hl">
+            <td>MENA payment (InstaPay, Vodafone)</td>
+            <td style="color:#10B981">✓ Native</td>
+            <td style="color:#EF4444">Card only</td>
+            <td style="color:#EF4444">Card only</td>
+            <td style="color:#64748B">Cash only</td>
+          </tr>
+          <tr class="hl">
+            <td>Price per semester</td>
+            <td style="color:#10B981">1,000 EGP (~$20)</td>
+            <td style="color:#EF4444">$240 USD</td>
+            <td style="color:#EF4444">$144 USD</td>
+            <td style="color:#EF4444">2,000–8,000 EGP</td>
+          </tr>
+          <tr class="hl">
+            <td>Educational breakdown (Mi-Academy)</td>
+            <td style="color:#10B981">✓ Unique — defense Q&A + steps</td>
+            <td style="color:#EF4444">✗</td>
+            <td style="color:#EF4444">✗</td>
+            <td style="color:#EF4444">✗</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:16px">
+      <div style="background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.12);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:20px;font-weight:700;color:#10B981">12×</div>
+        <div style="font-size:10px;color:#64748B;margin-top:2px">cheaper than ChatGPT Plus per semester</div>
+      </div>
+      <div style="background:rgba(34,211,238,.04);border:1px solid rgba(34,211,238,.12);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:20px;font-weight:700;color:#22D3EE">Only</div>
+        <div style="font-size:10px;color:#64748B;margin-top:2px">MENA-native academic AI with full export</div>
+      </div>
+      <div style="background:rgba(168,85,247,.04);border:1px solid rgba(168,85,247,.12);border-radius:10px;padding:14px;text-align:center">
+        <div style="font-size:20px;font-weight:700;color:#A855F7">$0</div>
+        <div style="font-size:10px;color:#64748B;margin-top:2px">spent by competitors on MENA specifics</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 08 — GO TO MARKET ═══ -->
+<div class="sl" data-n="7">
+  <div class="tag">07 — Go To Market</div><div class="pg">08 / 12</div>
+  <div class="w">
+    <div class="eyebrow">Growth strategy</div>
+    <div class="h2" style="margin-bottom:8px">Organic. Viral.<br><span class="cyan">Zero ad spend to start.</span></div>
+    <div class="accent"></div>
+    <div class="g3" style="margin-top:24px;margin-bottom:18px">
+      <div class="card card-c" style="padding:20px">
+        <div style="font-size:22px;margin-bottom:10px">📱</div>
+        <div class="h3" style="font-size:14px">TikTok — exam season</div>
+        <div class="body" style="font-size:12px;margin-bottom:10px">Organic content showing Mi solving real assignments in real-time. "Solved my GUC engineering assignment in 3 minutes." Peak: May/June + December.</div>
+        <div style="font-size:11px;font-weight:700;color:#22D3EE">Target: 100K views, 500 signups per video</div>
+      </div>
+      <div class="card" style="padding:20px">
+        <div style="font-size:22px;margin-bottom:10px">💬</div>
+        <div class="h3" style="font-size:14px">WhatsApp groups</div>
+        <div class="body" style="font-size:12px;margin-bottom:10px">Every Egyptian university has department WhatsApp groups with 200–500 students. One referral link = immediate conversions from a trusted peer.</div>
+        <div style="font-size:11px;font-weight:700;color:#A855F7">Target: 50 active groups, 5K reach</div>
+      </div>
+      <div class="card" style="padding:20px">
+        <div style="font-size:22px;margin-bottom:10px">🏫</div>
+        <div class="h3" style="font-size:14px">Campus ambassadors</div>
+        <div class="body" style="font-size:12px;margin-bottom:10px">Commission-based student reps per university. Direct access to high-intent peers. Self-funding — ambassadors earn from every subscription they drive.</div>
+        <div style="font-size:11px;font-weight:700;color:#10B981">Target: 20 ambassadors, 30 universities</div>
+      </div>
+    </div>
+    <div class="card" style="padding:20px">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#334155;margin-bottom:16px">12-Month Subscriber Path</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px">
+        <div>
+          <div style="font-size:9px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Month 1–3</div>
+          <div style="font-size:20px;font-weight:700;color:#fff">100</div>
+          <div style="font-size:10px;color:#22D3EE;margin-bottom:6px">Launch + TikTok</div>
+          <div class="btrack"><div class="bfill" style="width:10%"></div></div>
+          <div style="font-size:10px;color:#334155;margin-top:4px">35K EGP MRR</div>
+        </div>
+        <div>
+          <div style="font-size:9px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Month 4–6</div>
+          <div style="font-size:20px;font-weight:700;color:#fff">500</div>
+          <div style="font-size:10px;color:#22D3EE;margin-bottom:6px">WhatsApp + referral</div>
+          <div class="btrack"><div class="bfill" style="width:33%"></div></div>
+          <div style="font-size:10px;color:#334155;margin-top:4px">175K EGP MRR</div>
+        </div>
+        <div>
+          <div style="font-size:9px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Month 7–9</div>
+          <div style="font-size:20px;font-weight:700;color:#fff">2,000</div>
+          <div style="font-size:10px;color:#22D3EE;margin-bottom:6px">Saudi + UAE expansion</div>
+          <div class="btrack"><div class="bfill" style="width:66%"></div></div>
+          <div style="font-size:10px;color:#334155;margin-top:4px">700K EGP MRR</div>
+        </div>
+        <div>
+          <div style="font-size:9px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Month 10–12</div>
+          <div style="font-size:20px;font-weight:700;color:#22D3EE">5,000</div>
+          <div style="font-size:10px;color:#22D3EE;margin-bottom:6px">Full MENA presence</div>
+          <div class="btrack"><div class="bfill" style="width:100%"></div></div>
+          <div style="font-size:10px;color:#334155;margin-top:4px">1.75M EGP MRR</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 09 — TRACTION ═══ -->
+<div class="sl" data-n="8">
+  <div class="tag">08 — Traction</div><div class="pg">09 / 12</div>
+  <div class="glow" style="width:400px;height:400px;background:radial-gradient(circle,rgba(34,211,238,.05),transparent 70%);center;top:0;left:50%;transform:translateX(-50%)"></div>
+  <div class="w">
+    <div class="eyebrow">What we've built</div>
+    <div class="h2" style="margin-bottom:8px">Live product. Zero funding.<br><span class="cyan">Launching in 3 days.</span></div>
+    <div class="accent"></div>
+    <div class="g2" style="margin-top:24px">
+      <div>
+        <div class="card card-c" style="padding:22px;margin-bottom:14px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#22D3EE;margin-bottom:16px">What's already built</div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Full-stack product — live on Vercel</div><div class="body" style="font-size:11px">React + TypeScript + Vite · Supabase · Serverless API</div></div></div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">7 domain-specialist AI engines</div><div class="body" style="font-size:11px">Engineering · Medical · Law · CS · Business · Math · Humanities</div></div></div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">94 universities · 58 majors configured</div><div class="body" style="font-size:11px">Egypt · Saudi · UAE · Lebanon — academic context per uni</div></div></div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Full export engine built</div><div class="body" style="font-size:11px">PDF · DOCX · PPTX · SVG · XLSX · Source code · ZIP</div></div></div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Mi-Academy + Mi-Vault live</div><div class="body" style="font-size:11px">Educational breakdown + archive for every mission</div></div></div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Arabic RTL interface complete</div><div class="body" style="font-size:11px">Full bilingual product — Arabic + English</div></div></div>
+          <div class="row"><div class="dot"></div><div><div style="font-size:13px;font-weight:600;color:#fff">MENA payment rails live</div><div class="body" style="font-size:11px">InstaPay + Vodafone Cash — no credit card required</div></div></div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="padding:22px;margin-bottom:14px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#334155;margin-bottom:16px">The pre-launch reality</div>
+          <div style="background:rgba(34,211,238,.04);border:1px solid rgba(34,211,238,.1);border-radius:10px;padding:16px;margin-bottom:14px">
+            <div style="font-size:24px;font-weight:700;color:#22D3EE;margin-bottom:4px">$0</div>
+            <div style="font-size:12px;color:#64748B">raised to build this. Built entirely by the founder — design, engineering, AI prompt architecture, product strategy.</div>
+          </div>
+          <div style="background:rgba(168,85,247,.04);border:1px solid rgba(168,85,247,.1);border-radius:10px;padding:16px;margin-bottom:14px">
+            <div style="font-size:24px;font-weight:700;color:#A855F7;margin-bottom:4px">3 days</div>
+            <div style="font-size:12px;color:#64748B">to public launch. Exam season is active now — May/June is peak demand for MENA students.</div>
+          </div>
+          <div style="background:rgba(16,185,129,.04);border:1px solid rgba(16,185,129,.1);border-radius:10px;padding:16px">
+            <div style="font-size:24px;font-weight:700;color:#10B981;margin-bottom:4px">Perfect timing</div>
+            <div style="font-size:12px;color:#64748B">First investment deployed during peak exam season = immediate conversion opportunity with maximum student urgency.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 10 — ROADMAP ═══ -->
+<div class="sl" data-n="9">
+  <div class="tag">09 — Roadmap</div><div class="pg">10 / 12</div>
+  <div class="w">
+    <div class="eyebrow">Execution plan</div>
+    <div class="h2" style="margin-bottom:8px">Egypt first.<br><span class="grad">Then all of MENA.</span></div>
+    <div class="accent"></div>
+    <div class="g2" style="margin-top:24px">
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div class="tl">
+          <div class="tl-node"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:8px">
+              <div style="background:#22D3EE;color:#000;font-size:8px;font-weight:800;padding:3px 9px;border-radius:99px;letter-spacing:.08em">NOW — Launch</div>
+            </div>
+            <div class="card" style="padding:16px">
+              <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8">Public launch — organic TikTok exam season campaign</div></div>
+              <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8">WhatsApp group seeding — 50 Egyptian university groups</div></div>
+              <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8">Target: 100 paying subscribers in first 30 days</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="tl">
+          <div class="tl-node"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:8px">
+              <div style="background:rgba(168,85,247,.2);color:#A855F7;font-size:8px;font-weight:800;padding:3px 9px;border-radius:99px;letter-spacing:.08em">Q3 2025</div>
+            </div>
+            <div class="card" style="padding:16px">
+              <div class="row"><div class="dot dot-p"></div><div style="font-size:12px;color:#94A3B8">Tap.company card integration — expand beyond cash</div></div>
+              <div class="row"><div class="dot dot-p"></div><div style="font-size:12px;color:#94A3B8">20 campus ambassador program across Egypt</div></div>
+              <div class="row"><div class="dot dot-p"></div><div style="font-size:12px;color:#94A3B8">Target: 1,000 paying subscribers · 1M EGP MRR</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="tl">
+          <div class="tl-node"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:8px">
+              <div style="background:rgba(16,185,129,.2);color:#10B981;font-size:8px;font-weight:800;padding:3px 9px;border-radius:99px;letter-spacing:.08em">Q4 2025</div>
+            </div>
+            <div class="card" style="padding:16px">
+              <div class="row"><div class="dot dot-g"></div><div style="font-size:12px;color:#94A3B8">Saudi + UAE expansion · SAR + AED pricing · STC Pay</div></div>
+              <div class="row"><div class="dot dot-g"></div><div style="font-size:12px;color:#94A3B8">KSU, KFUPM, AUS partnerships</div></div>
+              <div class="row"><div class="dot dot-g"></div><div style="font-size:12px;color:#94A3B8">Target: 5,000 subscribers · $100K ARR USD</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="tl">
+          <div class="tl-node"><div class="tl-dot future"></div></div>
+          <div class="tl-content" style="padding-bottom:0">
+            <div style="display:inline-flex;align-items:center;gap:8px;margin-bottom:8px">
+              <div style="background:rgba(251,191,36,.15);color:#FBBF24;font-size:8px;font-weight:800;padding:3px 9px;border-radius:99px;letter-spacing:.08em">2026</div>
+            </div>
+            <div class="card" style="padding:16px">
+              <div class="row"><div class="dot dot-y"></div><div style="font-size:12px;color:#94A3B8">University licensing + institutional B2B tier</div></div>
+              <div class="row"><div class="dot dot-y"></div><div style="font-size:12px;color:#94A3B8">Jordan · Kuwait · Lebanon · Bahrain</div></div>
+              <div class="row"><div class="dot dot-y"></div><div style="font-size:12px;color:#94A3B8">Target: 20,000 subscribers · $5M ARR</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card card-c" style="padding:22px;margin-bottom:14px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#22D3EE;margin-bottom:16px">5-Year Revenue Projection</div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:#94A3B8">Year 1 · 5K users</span><span style="font-size:11px;font-weight:700;color:#fff">~$200K USD</span></div>
+              <div class="btrack"><div class="bfill" style="width:8%"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:#94A3B8">Year 2 · 20K users · Saudi + UAE</span><span style="font-size:11px;font-weight:700;color:#fff">~$1.2M USD</span></div>
+              <div class="btrack"><div class="bfill" style="width:24%"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:#94A3B8">Year 3 · 60K users · full MENA</span><span style="font-size:11px;font-weight:700;color:#fff">~$5M USD</span></div>
+              <div class="btrack"><div class="bfill" style="width:55%"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:#94A3B8">Year 4 · 150K users · B2B tier</span><span style="font-size:11px;font-weight:700;color:#fff">~$15M USD</span></div>
+              <div class="btrack"><div class="bfill" style="width:80%"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:#94A3B8">Year 5 · 300K users · API + enterprise</span><span style="font-size:11px;font-weight:700;color:#22D3EE">~$35M USD</span></div>
+              <div class="btrack"><div class="bfill" style="width:100%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="padding:18px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#334155;margin-bottom:12px">Growth levers post-raise</div>
+          <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8">Paid TikTok amplification during exam windows</div></div>
+          <div class="row"><div class="dot"></div><div style="font-size:12px;color:#94A3B8">Referral system — free missions for referrals</div></div>
+          <div class="row"><div class="dot dot-p"></div><div style="font-size:12px;color:#94A3B8">University partnerships → institutional bulk licensing</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 11 — THE ASK ═══ -->
+<div class="sl" data-n="10">
+  <div class="tag">10 — The Ask</div><div class="pg">11 / 12</div>
+  <div class="glow" style="width:600px;height:600px;background:radial-gradient(circle,rgba(34,211,238,.06),transparent 70%);top:-200px;right:-100px"></div>
+  <div class="glow" style="width:400px;height:400px;background:radial-gradient(circle,rgba(168,85,247,.05),transparent 70%);bottom:-100px;left:-50px"></div>
+  <div class="w">
+    <div class="eyebrow">Investment opportunity</div>
+    <div class="h2" style="margin-bottom:8px">Pre-seed round.<br><span class="grad">Deploy capital now.</span></div>
+    <div class="accent"></div>
+    <div class="g2" style="margin-top:24px">
+      <div>
+        <div class="card card-c" style="padding:24px;margin-bottom:14px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#22D3EE;margin-bottom:18px">Round details</div>
+          <div style="margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid rgba(255,255,255,.05)">
+            <div style="font-size:11px;color:#334155;margin-bottom:4px;text-transform:uppercase;letter-spacing:.1em">Raising</div>
+            <div style="font-size:40px;font-weight:700;color:#22D3EE;letter-spacing:-.04em;line-height:1">$150K</div>
+            <div style="font-size:12px;color:#64748B;margin-top:3px">USD · pre-seed</div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div>
+              <div style="font-size:10px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Runway</div>
+              <div style="font-size:20px;font-weight:700;color:#fff">18 months</div>
+              <div style="font-size:11px;color:#64748B">to 5K subscribers</div>
+            </div>
+            <div>
+              <div style="font-size:10px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px">Target at raise end</div>
+              <div style="font-size:20px;font-weight:700;color:#fff">$1.2M ARR</div>
+              <div style="font-size:11px;color:#64748B">USD · Series A ready</div>
+            </div>
+          </div>
+        </div>
+        <div class="card" style="padding:22px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#334155;margin-bottom:14px">Use of funds</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+                <span style="font-size:12px;color:#94A3B8">Marketing · TikTok · growth</span>
+                <span style="font-size:13px;font-weight:700;color:#fff">$60K · 40%</span>
+              </div>
+              <div class="btrack"><div class="bfill" style="width:40%"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+                <span style="font-size:12px;color:#94A3B8">Product · engineering</span>
+                <span style="font-size:13px;font-weight:700;color:#fff">$45K · 30%</span>
+              </div>
+              <div class="btrack"><div class="bfill" style="width:30%"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+                <span style="font-size:12px;color:#94A3B8">Operations · support · salaries</span>
+                <span style="font-size:13px;font-weight:700;color:#fff">$30K · 20%</span>
+              </div>
+              <div class="btrack"><div class="bfill" style="width:20%"></div></div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+                <span style="font-size:12px;color:#94A3B8">Reserve · AI infra</span>
+                <span style="font-size:13px;font-weight:700;color:#fff">$15K · 10%</span>
+              </div>
+              <div class="btrack"><div class="bfill" style="width:10%"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="card" style="padding:22px;margin-bottom:14px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#334155;margin-bottom:16px">Why invest now</div>
+          <div class="row"><div class="dot dot-g"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Exam season starts now</div><div class="body" style="font-size:11px">May/June is peak demand — capital deployed today converts immediately</div></div></div>
+          <div class="row"><div class="dot dot-g"></div><div><div style="font-size:13px;font-weight:600;color:#fff">Product is complete — zero development risk</div><div class="body" style="font-size:11px">This is not an MVP. It's a full product built and tested. Money goes to growth, not building.</div></div></div>
+          <div class="row"><div class="dot dot-g"></div><div><div style="font-size:13px;font-weight:600;color:#fff">First mover in a $2.4B market</div><div class="body" style="font-size:11px">No direct MENA-native competitor exists. Window is open — not forever.</div></div></div>
+          <div class="row"><div class="dot dot-g"></div><div><div style="font-size:13px;font-weight:600;color:#fff">99% gross margin — capital efficient</div><div class="body" style="font-size:11px">Every dollar invested primarily drives growth, not cost. AI model costs are negligible.</div></div></div>
+        </div>
+        <div style="background:rgba(34,211,238,.04);border:1px solid rgba(34,211,238,.12);border-radius:12px;padding:20px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#22D3EE;margin-bottom:14px">Return scenario @ 5K users</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div>
+              <div style="font-size:10px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px">MRR</div>
+              <div style="font-size:18px;font-weight:700;color:#fff">1.75M EGP</div>
+              <div style="font-size:10px;color:#64748B">~$35K/mo</div>
+            </div>
+            <div>
+              <div style="font-size:10px;color:#334155;text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px">ARR</div>
+              <div style="font-size:18px;font-weight:700;color:#22D3EE">$420K USD</div>
+              <div style="font-size:10px;color:#64748B">in 12–18 months</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SLIDE 12 — CLOSE ═══ -->
+<div class="sl" data-n="11">
+  <div class="glow" style="width:700px;height:700px;background:radial-gradient(circle,rgba(34,211,238,.06),transparent 70%);top:50%;left:50%;transform:translate(-50%,-50%)"></div>
+  <div class="pg">12 / 12</div>
+  <div class="w" style="text-align:center">
+    <div class="cs fl">
+      <div class="c3">
+        <div class="cf a">Mi</div><div class="cf b">Mi</div>
+        <div class="cf c">Mi</div><div class="cf d">Mi</div>
+        <div class="cf e"></div><div class="cf f"></div>
+      </div>
+    </div>
+    <div class="eyebrow" style="margin-bottom:16px">Let's build this together</div>
+    <div class="h1" style="margin-bottom:16px;font-size:clamp(28px,4vw,56px)">The MENA academic engine<br>is <span class="grad">launching in 3 days.</span></div>
+    <div class="body" style="margin:0 auto 36px;max-width:500px;font-size:14px;line-height:1.7">12 million students. Zero tools built for them. One founder who built the solution from scratch, alone, with no funding. This is the moment to get in.</div>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:40px">
+      <a href="https://www.mi-assignment.com" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:linear-gradient(135deg,#22D3EE,#A855F7);color:#000;font-weight:700;border-radius:11px;text-decoration:none;font-size:13px;letter-spacing:-.01em">🌐 www.mi-assignment.com</a>
+      <a href="https://wa.me/201107743984" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#fff;font-weight:600;border-radius:11px;text-decoration:none;font-size:13px">💬 +20 110 774 3984</a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1px;max-width:700px;margin:0 auto;background:rgba(255,255,255,.06);border-radius:12px;overflow:hidden">
+      <div style="background:#08090D;padding:18px;text-align:center"><div style="font-size:22px;font-weight:700;color:#22D3EE">$150K</div><div style="font-size:9px;color:#334155;text-transform:uppercase;letter-spacing:.08em;margin-top:3px">Ask</div></div>
+      <div style="background:#08090D;padding:18px;text-align:center"><div style="font-size:22px;font-weight:700;color:#22D3EE">99%</div><div style="font-size:9px;color:#334155;text-transform:uppercase;letter-spacing:.08em;margin-top:3px">Margin</div></div>
+      <div style="background:#08090D;padding:18px;text-align:center"><div style="font-size:22px;font-weight:700;color:#22D3EE">$2.4B</div><div style="font-size:9px;color:#334155;text-transform:uppercase;letter-spacing:.08em;margin-top:3px">Market</div></div>
+      <div style="background:#08090D;padding:18px;text-align:center"><div style="font-size:22px;font-weight:700;color:#22D3EE">0</div><div style="font-size:9px;color:#334155;text-transform:uppercase;letter-spacing:.08em;margin-top:3px">Competitors</div></div>
+      <div style="background:#08090D;padding:18px;text-align:center"><div style="font-size:22px;font-weight:700;color:#22D3EE">3 days</div><div style="font-size:9px;color:#334155;text-transform:uppercase;letter-spacing:.08em;margin-top:3px">To launch</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <button class="arr" id="pb" disabled>&#8592;</button>
+  <div class="pip" id="dt"></div>
+  <button class="arr" id="nb">&#8594;</button>
+</div>
+</div>
+
+<script>
+const S=document.querySelectorAll('.sl'),N=S.length;
+let c=0;
+const dt=document.getElementById('dt');
+for(let i=0;i<N;i++){const d=document.createElement('div');d.className='p'+(i===0?' a':'');d.onclick=()=>go(i);dt.appendChild(d)}
+function go(n){
+  if(n===c||n<0||n>=N)return;
+  S[c].classList.remove('in');S[c].classList.add('out');
+  const p=c;setTimeout(()=>S[p]?.classList.remove('out'),620);
+  c=n;S[c].classList.add('in');
+  document.querySelectorAll('.p').forEach((d,i)=>d.classList.toggle('a',i===c));
+  document.getElementById('pb').disabled=c===0;
+  document.getElementById('nb').disabled=c===N-1;
+}
+document.getElementById('pb').onclick=()=>go(c-1);
+document.getElementById('nb').onclick=()=>go(c+1);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')go(c+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')go(c-1)});
+document.getElementById('pb').disabled=true;
+
+function upd(){
+  const s=+document.getElementById('r1').value,p=+document.getElementById('r2').value,ch=+document.getElementById('r3').value/100;
+  document.getElementById('v1').textContent=s.toLocaleString();
+  document.getElementById('v2').textContent=p.toLocaleString();
+  document.getElementById('v3').textContent=Math.round(ch*100)+'%';
+  const mr=s*p,ar=mr*12,cost=s*0.25*60,mg=Math.round(((mr-cost)/mr)*100),lt=Math.round(p/ch);
+  document.getElementById('vmrr').textContent=mr.toLocaleString();
+  document.getElementById('varr').textContent=ar.toLocaleString();
+  document.getElementById('vusd').textContent='~$'+Math.round(ar/50).toLocaleString()+' USD';
+  document.getElementById('vcost').textContent='~'+Math.round(cost).toLocaleString()+' EGP/mo';
+  document.getElementById('vmg').textContent=mg+'%';
+  document.getElementById('vltv').textContent=lt.toLocaleString()+' EGP';
+}
+['r1','r2','r3'].forEach(id=>document.getElementById(id)?.addEventListener('input',upd));
+</script>
+</body>
+</html>
